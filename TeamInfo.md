@@ -1,5 +1,3 @@
-# team057-wynaut
-
 ## Basic Information
 
 |   Info      |        Description     |
