@@ -1,7 +1,8 @@
 import express, { Request, Response } from "express";
+import * as relation from "./models"
 
 const app = express();
-const PORT = 3001;
+const PORT : number = 3001;
 
 app.use(express.json());
 
