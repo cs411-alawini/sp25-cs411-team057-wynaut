@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev" : "nodemon --exec ts-node index.ts"
+    "dev": "nodemon --exec ts-node index.ts"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +15,7 @@
     "@types/express": "^5.0.1",
     "body-parser": "^2.2.0",
     "express": "^5.1.0",
+    "mysql2": "^3.14.0",
     "nodemon": "^3.1.9",
     "ts-node": "^10.9.2",
     "typescript": "^5.8.3"
