@@ -10,3 +10,4 @@ export async function getAllReceipts(): Promise<Receipts[]> {
     return rows as Receipts[];
 }
 
+console.log(getAllReceipts());
