@@ -12,26 +12,32 @@ export interface AverageExpense {
     AvgExpense: Float32Array
 }
 export interface Budget {
-    Category: String,
-    UserID: Number,
+    Category: string,
+    UserID: number,
     Budget: Float32Array,
     Spent: Float32Array,
 }
 export interface Contributes {
-    UserID: Number,
-    ItemID: Number,
+    UserID: number,
+    ItemID: number,
     Percentage: Float32Array,
 }
 export interface Items {
-    ItemId: Number,
-    Category: String,
-    ReceiptID: Number,
-    ItemName: String,
-    Price: Float32Array
+    ItemId: number,
+    Category: string,
+    ReceiptID: number,
+    ItemName: string,
+    Price: number
 }
 export interface Receipts {
-    ReceiptID: Number,
-    UserID: Number,
-    PurchaseDat: Date,
-    Seller: String
+    ReceiptID: number,
+    UserID: number,
+    PurchaseDate: string,
+    Seller: string
+}
+
+export interface Test{
+    UserID: number,
+    Username: string,
+    Password: string
 }
