@@ -2,7 +2,10 @@ import express, { Request, Response } from "express";
 import * as relation from "./models";
 
 const app = express();
-const PORT: number = 3001;
+const PORT = 3001;
+
+app.use(express.json());
+app.use(express.urlencoded());
 
 app.use(express.json());
 
