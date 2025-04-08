@@ -1,5 +1,4 @@
-import { Receipts } from '../models/models';
-import { Items } from '../models/models';
+import { Receipts, Items } from '../models/Models';
 import pool from './connections';
 import { RowDataPacket } from "mysql2";
 
