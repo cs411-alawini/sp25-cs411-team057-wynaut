@@ -7,7 +7,7 @@ app.use(express.json());
 
 app.get('/api/',
     (req: Request, res: Response) => {
-        res.send('API');
+        res.send('API of Website');
     });
 
 app.listen(PORT, 
