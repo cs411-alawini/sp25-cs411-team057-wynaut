@@ -1,4 +1,5 @@
 import express, { Request, Response } from "express";
+import * as relation from "./models";
 
 const app = express();
 const PORT = 3001;
