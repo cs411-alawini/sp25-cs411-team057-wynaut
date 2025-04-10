@@ -1,13 +1,27 @@
 import React from "react";
 import InputBox, { ItemInput } from "../components/itemBox";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
 const AddReceipt: React.FC = () => {
     async function submitReceipt(inputs: ItemInput[]) {
         //Do something here
         console.log(inputs);
-        const promptedValue = prompt(
-            "Please enter a userID to store this with:"
-        );
+
+        const message = "Please enter a userID to store this with.";
+        let promptedValue = -1;
+        while (true) {
+            const input = prompt(message);
+            if (input === null) {
+                alert("Invalid input. Please enter a number.");
+                continue;
+            }
+            const num = Number(input);
+            if (!isNaN(num)) {
+                break;
+            }
+            alert("Invalid input. Please enter a number.");
+        }
+
         console.log(promptedValue);
         const data = [inputs, promptedValue];
         try {
@@ -31,7 +45,14 @@ const AddReceipt: React.FC = () => {
 
     return (
         <div>
-            <h1> Receipt Manual Inputter </h1>
+            <h1 className="container">
+                <div className="general-outline">
+                    Receipt Manual Inputter
+                    <Link to="/">
+                        <button className="input-button">Return to Home</button>
+                    </Link>
+                </div>
+            </h1>
             <InputBox onSubmit={submitReceipt} />
         </div>
     );

@@ -1,6 +1,6 @@
 import { stringify } from "querystring";
 import React, { useState } from "react";
-import { TupleType } from "typescript";
+import "../index.css";
 
 export interface ItemInput {
     name: string;
@@ -43,10 +43,14 @@ const ItemBox: React.FC<ItemBoxProps> = (IBProps) => {
             ans.name = value;
         }
         if (inputIndex === 1 && !isNaN(Number(value))) {
-            if (
-                value.indexOf(".") >= value.length - 3 ||
-                value.indexOf(".") === -1
-            ) {
+            if (value === "") {
+                //If nothing, make it 0
+                ans.price = "0";
+            } else if (value.indexOf(".") === -1) {
+                //if no decimal and only 0
+                ans.price = String(parseInt(value, 10));
+            } else if (value.indexOf(".") >= value.length - 3) {
+                //if has decimal, we keep under 2 deci places
                 ans.price = value;
             }
         }
@@ -70,39 +74,51 @@ const ItemBox: React.FC<ItemBoxProps> = (IBProps) => {
     return (
         <div className="container">
             <div>
-                <button onClick={() => handleAddInput()}>Add Item</button>
+                <button
+                    onClick={() => handleAddInput()}
+                    className="input-button"
+                >
+                    Add Item
+                </button>
             </div>
             <div>
-                <button onClick={() => submitInput()}>Submit</button>
+                <button onClick={() => submitInput()} className="input-button">
+                    Submit
+                </button>
             </div>
             {inputs.map((item, index) => (
-                <div className="input_container" key={index}>
+                <div className="input-container" key={index}>
                     <input
                         name="name"
                         type="text"
                         value={item.name}
                         onChange={(event) => handleChange(event, index, 0)}
+                        className="general-outline"
                     />
                     <input
                         name="price"
                         type="text"
                         value={item.price}
                         onChange={(event) => handleChange(event, index, 1)}
+                        className="general-outline"
                     />
                     <input
                         name="amount"
                         type="text"
                         value={item.amount}
                         onChange={(event) => handleChange(event, index, 2)}
+                        className="general-outline"
                     />
                     {inputs.length > 1 && (
-                        <button onClick={() => handleDeleteInput(index)}>
-                            -Delete-
+                        <button
+                            onClick={() => handleDeleteInput(index)}
+                            className="input-button"
+                        >
+                            Delete
                         </button>
                     )}
                 </div>
             ))}
-            <div className="body"> {JSON.stringify(inputs)} </div>
         </div>
     );
 };
