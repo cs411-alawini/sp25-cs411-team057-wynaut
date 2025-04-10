@@ -11,8 +11,10 @@ const AddReceipt: React.FC = () => {
         console.log(promptedValue);
         const data = [inputs, promptedValue];
         try {
-            const response = await fetch("/addReceipt", { //CHANGE ENDPOINT HERE
-                method: "POST",
+            const response = await fetch("http://localhost:3001/AddReceipt", {
+                //CHANGE ENDPOINT HERE
+                headers: { "Content-type": "application/json" },
+                method: "PUT",
                 body: JSON.stringify(data),
             });
             console.log("GOT HERE");
