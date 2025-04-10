@@ -5,6 +5,7 @@ import HomePage from "./pages/homePage";
 import AddReceipt from "./pages/addReceipt";
 
 const App: React.FC = () => {
+
     return (
         <Router>
             <Routes>
