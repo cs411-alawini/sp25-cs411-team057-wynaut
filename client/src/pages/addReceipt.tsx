@@ -17,6 +17,7 @@ const AddReceipt: React.FC = () => {
             }
             const num = Number(input);
             if (!isNaN(num)) {
+                promptedValue = num;
                 break;
             }
             alert("Invalid input. Please enter a number.");
