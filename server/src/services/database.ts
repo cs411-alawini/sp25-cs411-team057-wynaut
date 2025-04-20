@@ -8,26 +8,14 @@ export async function getAllReceipts(userID: number): Promise<Receipts[]> {
     return rows as Receipts[];
 }
 
-export async function addReceipt(
-    receipt: Omit<Receipts, "ReceiptID">
-): Promise<number> {
-    const [maxNum] = await pool.query(
-        "Select Max(ReceiptID) as maxNum From Receipts"
-    );
-    const nextNum = (maxNum as [{ maxNum: number }])[0].maxNum + 1;
-    const sqlQuery = `Insert Into Receipts(ReceiptID, UserID, PurchaseDate, Seller) VALUES (${nextNum}, ${receipt.UserID}, '${receipt.PurchaseDate}', '${receipt.Seller}');`;
+export async function addReceipt(receipt: Omit<Receipts, "ReceiptID">): Promise<void> {
+    const sqlQuery = `Insert Into Receipts(UserID, PurchaseDate, Seller) VALUES (${receipt.UserID}, '${receipt.PurchaseDate}', '${receipt.Seller}');`;
     await pool.query(sqlQuery);
-    return nextNum;
 }
 
-export async function addItem(item: Omit<Items, "ItemId">): Promise<number> {
-    const [maxNum] = await pool.query(
-        "Select Max(ItemID) as maxNum From Items"
-    );
-    const nextNum = (maxNum as [{ maxNum: number }])[0].maxNum + 1;
-    const sqlQuery = `Insert Into Items(ItemID, Category, ReceiptID, ItemName, Price) VALUES (${nextNum}, ${item.Category}, ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
+export async function addItem(item: Omit<Items, "ItemId">): Promise<void> {
+    const sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES ('${item.Category}', ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
     await pool.query(sqlQuery);
-    return nextNum;
 }
 
 export async function deleteReceipt(receiptID: number): Promise<void> {
@@ -79,33 +67,33 @@ async function main() {
         ItemName: "TestItem",
         Price: 1.01,
     });
-    getReceipt(1000).then((results) => {
-        console.log(results);
-    });
-    getItem(9901).then((results) => {
-        console.log(results);
-    });
-    await updateReceipt({
-        ReceiptID: 1000,
-        UserID: 1,
-        PurchaseDate: "2025-04-09",
-        Seller: "TestSell2",
-    });
-    await updateItem({
-        ItemId: 9901,
-        Category: "Education",
-        ReceiptID: 1,
-        ItemName: "TestItem2",
-        Price: 1.01,
-    });
-    getReceipt(1000).then((results) => {
-        console.log(results);
-    });
-    getItem(9901).then((results) => {
-        console.log(results);
-    });
-    deleteReceipt(1000);
-    deleteItem(9901);
+    // getReceipt(1000).then((results) => {
+    //     console.log(results);
+    // });
+    // getItem(9901).then((results) => {
+    //     console.log(results);
+    // });
+    // await updateReceipt({
+    //     ReceiptID: 1000,
+    //     UserID: 1,
+    //     PurchaseDate: "2025-04-09",
+    //     Seller: "TestSell2",
+    // });
+    // await updateItem({
+    //     ItemId: 9901,
+    //     Category: "Education",
+    //     ReceiptID: 1,
+    //     ItemName: "TestItem2",
+    //     Price: 1.01,
+    // });
+    // getReceipt(1000).then((results) => {
+    //     console.log(results);
+    // });
+    // getItem(9901).then((results) => {
+    //     console.log(results);
+    // });
+    // deleteReceipt(1000);
+    // deleteItem(9901);
 }
 
-//main();
+main();
