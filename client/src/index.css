@@ -11,14 +11,14 @@ body {
     -moz-osx-font-smoothing: grayscale;
 }
 
-.general-outline {
+.general-outline {  /* Makes an outline for something */
     border: 1px solid #6e1a1a;
     border-radius: 4px;
     padding: 8px;
     outline: none;
 }
 
-.input-container {
+.input-container { /* large container for multiple input boxes*/
     /* height: 200px; */
     padding: 10px;
     display: flex;
@@ -26,7 +26,16 @@ body {
     justify-content: center;
 }
 
-.input-button {
+.input-box { /* container a single text and input */
+    /* height: 200px; */
+    padding: 10px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-button { /* simple button with outline*/
     padding: 10px;
     border: 1px solid #6e1a1a;
     border-radius: 4px;
@@ -38,7 +47,6 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-
 }
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",

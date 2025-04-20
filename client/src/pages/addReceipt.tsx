@@ -11,22 +11,22 @@ const AddReceipt: React.FC = () => {
         let promptedValue = -1;
         while (true) {
             const input = prompt(message);
-            if (input === null) {
-                alert("Invalid input. Please enter a number.");
-                continue;
+            if (input === null) { //Canceled
+                return;
             }
             const num = Number(input);
             if (!isNaN(num)) {
                 promptedValue = num;
                 break;
             }
+            console.log(num);
             alert("Invalid input. Please enter a number.");
         }
 
         console.log(promptedValue);
         const data = [inputs, promptedValue];
         try {
-            const response = await fetch("http://localhost:3001/AddReceipt", {
+            const response = await fetch("http://localhost:3001/addReceipt", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "PUT",
