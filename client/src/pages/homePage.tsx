@@ -1,16 +1,27 @@
 import { log } from "console";
-import React, { useState } from "react";
+import React, { useState, JSX } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-
+import {IDstate} from "../App"
 interface loginType {
     username: string;
     password: string;
 }
 
-const HomePage: React.FC = () => {
+const HomePage = ({userID, setUserID} : IDstate) : JSX.Element => {
+    console.log(userID);
     const [loginInfo, setLogin] = useState({ username: "", password: "" });
+    const [loginStatus, setStatus] = useState(0); //0 = not login yet 1 = in process 2 = logged in
 
-    const changePassword = (event: any) => {
+    const buttonText = () => { //Shows when trying to login
+        if (loginStatus == 0){
+            return "Login";
+        }
+        else{
+            return "Logging In...";
+        }
+    }
+
+    const changePassword = (event: any) => { //Update the password based on input
         let value: string = event.target.value;
         let curr_pass: string = loginInfo.password;
         if (value.length > curr_pass.length) {
@@ -28,11 +39,13 @@ const HomePage: React.FC = () => {
         console.log({ ...loginInfo, password: curr_pass });
     };
 
-    const hidePassword = (pass: string) => {
+    const hidePassword = (pass: string) => { //Hides the password with *
         return "*".repeat(loginInfo.password.length);
     };
 
-    async function tryLogin(){
+    async function tryLogin(){ //Sends the user and pass to backend
+        setStatus(1);
+
         try {
             const response = await fetch("http://localhost:3001/login", {
                 //CHANGE ENDPOINT HERE
@@ -47,60 +60,65 @@ const HomePage: React.FC = () => {
             const json = await response.json();
             console.log(json.status);
 
-
             // Do something to check if it works?
         } catch (error) {
             console.error((error as Error).message);
         }
+
+        setStatus(2); //Move this where we test if it works
+        setUserID(1);
     };
 
-    return (
-        <div className="container">
-            <div className="input-box">
-                <text className="general-outline">Username</text>
-                <input
-                    name="Username"
-                    type="text"
-                    value={loginInfo.username}
-                    onChange={(event) => {
-                        setLogin((currloginInfo) => ({
-                            ...currloginInfo,
-                            username: event.target.value,
-                        }));
-                        console.log({
-                            ...loginInfo,
-                            username: event.target.value,
-                        });
-                    }}
-                    className="general-outline"
-                />
+    if (userID == 0 && loginStatus != 2){ //No userID set and hasn't logged in yet
+        return (
+            <div className="container">
+                <div className="input-box">
+                    <text className="general-outline">Username</text>
+                    <input
+                        name="Username"
+                        type="text"
+                        value={loginInfo.username}
+                        onChange={(event) => {
+                            setLogin((currloginInfo) => ({
+                                ...currloginInfo,
+                                username: event.target.value,
+                            }));
+                            console.log({
+                                ...loginInfo,
+                                username: event.target.value,
+                            });
+                        }}
+                        className="general-outline"
+                    />
+                </div>
+    
+                <div className="input-box">
+                    <text className="general-outline">Password</text>
+                    <input
+                        name="Password"
+                        type="text"
+                        value={hidePassword(loginInfo.password)}
+                        onChange={changePassword}
+                        className="general-outline"
+                    />
+                </div>
+    
+                <button className="input-button" onClick={tryLogin}>
+                    {buttonText()}
+                </button>
             </div>
-
-            <div className="input-box">
-                <text className="general-outline">Password</text>
-                <input
-                    name="Password"
-                    type="text"
-                    value={hidePassword(loginInfo.password)}
-                    onChange={changePassword}
-                    className="general-outline"
-                />
+        );
+    }
+    else{
+        return (
+            <div className="container">
+                <h1> Home Page :D</h1>
+                <Link to="/AddReceipt">
+                    <button className="input-button">Manual Receipt Adder</button>
+                </Link>
             </div>
-
-            <button className="input-button" onClick={tryLogin}>
-                Login
-            </button>
-        </div>
-    );
-
-    return (
-        <div className="container">
-            <h1> Home Page :D</h1>
-            <Link to="/AddReceipt">
-                <button className="input-button">Manual Receipt Adder</button>
-            </Link>
-        </div>
-    );
+        );
+    }
 };
 
 export default HomePage;
