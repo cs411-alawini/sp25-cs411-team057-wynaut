@@ -21,6 +21,9 @@
     "typescript": "^5.8.3"
   },
   "dependencies": {
+    "async-mutex": "^0.5.0",
+    "cors": "^2.8.5",
+    "date": "^2.0.6",
     "dotenv": "^16.4.7",
     "mysql2": "^3.14.0"
   },
