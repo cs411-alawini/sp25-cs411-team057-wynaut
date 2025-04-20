@@ -7,22 +7,29 @@ export async function getAllReceipts(userID: number): Promise<Receipts[]> {
     const [rows] = await pool.query(sqlQuery);
     return rows as Receipts[];
 }
-export async function addAccount(account: {Username:string, Password:string}): Promise<void>{
+export async function addAccount(
+    Username: string,
+    Password: string
+): Promise<void> {
     const sqlQuery = `Insert Into Accounts(Username, Password, Income, MinIncome, MaxIncome) 
-                        VALUES ('${account.Username}', '${account.Password}', null, null, null)`;
+                        VALUES ('${Username}', '${Password}', null, null, null)`;
     await pool.query(sqlQuery);
-
 }
 
-export async function login(account: {Username:string, Password:string}): Promise<number>{
-    const sqlQuery = `Select UserID From Accounts Where Username = '${account.Username}' and Password = '${account.Password}'`;
+export async function login(
+    Username: string,
+    Password: string
+): Promise<number> {
+    const sqlQuery = `Select UserID From Accounts Where Username = '${Username}' and Password = '${Password}'`;
     const [rows] = await pool.query(sqlQuery);
-    const User = (rows as [{UserID:number}]);
-    if (User.length as number == 0) return 0;
+    const User = rows as [{ UserID: number }];
+    if ((User.length as number) == 0) return 0;
     else return User[0].UserID;
 }
 
-export async function addReceipt(receipt: Omit<Receipts, "ReceiptID">): Promise<number> {
+export async function addReceipt(
+    receipt: Omit<Receipts, "ReceiptID">
+): Promise<number> {
     const sqlQuery = `Insert Into Receipts(UserID, PurchaseDate, Seller) VALUES (${receipt.UserID}, '${receipt.PurchaseDate}', '${receipt.Seller}');`;
     await pool.query(sqlQuery);
     const [maxNum] = await pool.query(
@@ -32,7 +39,7 @@ export async function addReceipt(receipt: Omit<Receipts, "ReceiptID">): Promise<
 }
 
 export async function addItem(item: Omit<Items, "ItemId">): Promise<void> {
-    const sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES ('${item.Category}', ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
+    const sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES (${item.Category}, ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
     await pool.query(sqlQuery);
 }
 
@@ -71,7 +78,6 @@ export async function getItem(itemID: number): Promise<Items> {
     const [rows] = await pool.query(sqlQuery);
     return (rows as Items[])[0];
 }
-
 
 // Testing
 async function main() {
@@ -113,9 +119,9 @@ async function main() {
     // });
     // deleteReceipt(1000);
     // deleteItem(9901);
-    login({Username: "TestUser", Password: "12"}).then((results) => {
-        console.log(results);
-    });
+    // login({Username: "TestUser", Password: "12"}).then((results) => {
+    //     console.log(results);
+    // });
 }
 
 main();

@@ -1,27 +1,28 @@
 import { log } from "console";
 import React, { useState, JSX } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import {IDstate} from "../App"
+import { IDstate } from "../App";
 interface loginType {
     username: string;
     password: string;
 }
 
-const HomePage = ({userID, setUserID} : IDstate) : JSX.Element => {
+const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
     console.log(userID);
     const [loginInfo, setLogin] = useState({ username: "", password: "" });
     const [loginStatus, setStatus] = useState(0); //0 = not login yet 1 = in process 2 = logged in
 
-    const buttonText = () => { //Shows when trying to login
-        if (loginStatus == 0){
+    const buttonText = () => {
+        //Shows when trying to login
+        if (loginStatus == 0) {
             return "Login";
-        }
-        else{
+        } else {
             return "Logging In...";
         }
-    }
+    };
 
-    const changePassword = (event: any) => { //Update the password based on input
+    const changePassword = (event: any) => {
+        //Update the password based on input
         let value: string = event.target.value;
         let curr_pass: string = loginInfo.password;
         if (value.length > curr_pass.length) {
@@ -39,37 +40,46 @@ const HomePage = ({userID, setUserID} : IDstate) : JSX.Element => {
         console.log({ ...loginInfo, password: curr_pass });
     };
 
-    const hidePassword = (pass: string) => { //Hides the password with *
+    const hidePassword = (pass: string) => {
+        //Hides the password with *
         return "*".repeat(loginInfo.password.length);
     };
 
-    async function tryLogin(){ //Sends the user and pass to backend
+    async function tryLogin() {
+        //Sends the user and pass to backend
         setStatus(1);
 
         try {
             const response = await fetch("http://localhost:3001/login", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "PUT",
+                method: "POST",
                 body: JSON.stringify(loginInfo),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
 
-            const json = await response.json();
-            console.log(json.status);
+            let new_id = JSON.parse(await response.json());
+
+            console.log(new_id);
+
+            if (new_id) {
+                setStatus(2); //Move this where we test if it works
+
+                setUserID(new_id);
+            } else {
+                setStatus(0);
+            }
 
             // Do something to check if it works?
         } catch (error) {
             console.error((error as Error).message);
         }
+    }
 
-        setStatus(2); //Move this where we test if it works
-        setUserID(1);
-    };
-
-    if (userID == 0 && loginStatus != 2){ //No userID set and hasn't logged in yet
+    if (userID == 0 && loginStatus != 2) {
+        //No userID set and hasn't logged in yet
         return (
             <div className="container">
                 <div className="input-box">
@@ -91,30 +101,42 @@ const HomePage = ({userID, setUserID} : IDstate) : JSX.Element => {
                         className="general-outline"
                     />
                 </div>
-    
+
                 <div className="input-box">
                     <text className="general-outline">Password</text>
                     <input
                         name="Password"
                         type="text"
-                        value={hidePassword(loginInfo.password)}
-                        onChange={changePassword}
+                        // value={hidePassword(loginInfo.password)}
+                        // onChange={changePassword}
+                        value={loginInfo.password}
+                        onChange={(event) => {
+                            setLogin((currloginInfo) => ({
+                                ...currloginInfo,
+                                password: event.target.value,
+                            }));
+                            console.log({
+                                ...loginInfo,
+                                password: event.target.value,
+                            });
+                        }}
                         className="general-outline"
                     />
                 </div>
-    
+
                 <button className="input-button" onClick={tryLogin}>
                     {buttonText()}
                 </button>
             </div>
         );
-    }
-    else{
+    } else {
         return (
             <div className="container">
                 <h1> Home Page :D</h1>
                 <Link to="/AddReceipt">
-                    <button className="input-button">Manual Receipt Adder</button>
+                    <button className="input-button">
+                        Manual Receipt Adder
+                    </button>
                 </Link>
             </div>
         );
