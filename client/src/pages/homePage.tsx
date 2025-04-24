@@ -15,9 +15,9 @@ const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
 
     const buttonTextLogin = () => {
         //Shows when trying to login
-        if (loginStatus <= 0 ) {
+        if (loginStatus <= 0) {
             return "Login";
-        } else if (loginStatus == 1){
+        } else if (loginStatus == 1) {
             return "Logging In...";
         }
     };
@@ -26,24 +26,24 @@ const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
         //Shows when trying to login
         if (createStatus != 1) {
             return "Create Account";
-        } else{
+        } else {
             return "Creating...";
         }
     };
 
     const buttonResponse = () => {
-        let text : string = "";
-        if (loginStatus == -1){
-            text = "Login failed"
+        let text: string = "";
+        if (loginStatus == -1) {
+            text = "Login failed";
         }
-        if (createStatus == -1){
-            text = "Could not create account"
+        if (createStatus == -1) {
+            text = "Could not create account";
         }
-        if (createStatus == 2){
-            text = "Account Created"
+        if (createStatus == 2) {
+            text = "Account Created";
         }
-        return <text> {text} </text>
-    }
+        return <text> {text} </text>;
+    };
 
     async function tryLogin() {
         setLogin(1);
@@ -79,12 +79,12 @@ const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
         }
     }
 
-    async function tryCreate(){
+    async function tryCreate() {
         setLogin(0);
         setCreate(1);
 
         try {
-            const response = await fetch("http://localhost:3001/createAccount", {
+            const response = await fetch("http://localhost:3001/login", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "PUT",
@@ -92,11 +92,10 @@ const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
-            }
-            else{
+            } else {
                 setCreate(2);
             }
-            
+
             // Do something to check if it works?
         } catch (error) {
             console.error((error as Error).message);
@@ -152,12 +151,11 @@ const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
                     <button className="input-button" onClick={tryLogin}>
                         {buttonTextLogin()}
                     </button>
-                    
+
                     <button className="input-button" onClick={tryCreate}>
                         {buttonTextCreate()}
                     </button>
                 </div>
-                
 
                 {buttonResponse()}
             </div>
@@ -177,4 +175,3 @@ const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
 };
 
 export default HomePage;
-
