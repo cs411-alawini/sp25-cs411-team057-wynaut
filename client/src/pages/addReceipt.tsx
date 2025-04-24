@@ -1,23 +1,36 @@
-import React, {JSX} from "react";
+import React from "react";
 import InputBox, { ItemInput } from "../components/itemBox";
-import { BrowserRouter as Router, Routes, Route, Link, Navigate  } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 
-interface userIn{
-    userID: number
+interface AddReceiptProps {
+    userID: number;
 }
 
-const AddReceipt = ({userID} : userIn): JSX.Element => {
-
-    if (userID == 0) {
-        return <Navigate to='/'  />
-    }
+const AddReceipt: React.FC<AddReceiptProps> = () => {
     async function submitReceipt(inputs: ItemInput[]) {
         //Do something here
         console.log(inputs);
 
-        const data = [inputs, userID];
+        const message = "Please enter a userID to store this with.";
+        let promptedValue = -1;
+        while (true) {
+            const input = prompt(message);
+            if (input === null) {
+                alert("Invalid input. Please enter a number.");
+                continue;
+            }
+            const num = Number(input);
+            if (!isNaN(num)) {
+                promptedValue = num;
+                break;
+            }
+            alert("Invalid input. Please enter a number.");
+        }
+
+        console.log(promptedValue);
+        const data = [inputs, promptedValue];
         try {
-            const response = await fetch("http://localhost:3001/addReceipt", {
+            const response = await fetch("http://localhost:3001/AddReceipt", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "PUT",
@@ -48,7 +61,6 @@ const AddReceipt = ({userID} : userIn): JSX.Element => {
             <InputBox onSubmit={submitReceipt} />
         </div>
     );
-
 };
 
 export default AddReceipt;
