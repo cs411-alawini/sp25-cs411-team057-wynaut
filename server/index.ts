@@ -1,7 +1,12 @@
 import express, { Request, Response } from "express";
 import bodyParser, { json } from "body-parser";
 import "./src/services/database";
-import { addItem, addReceipt, login } from "./src/services/database";
+import {
+    addAccount,
+    addItem,
+    addReceipt,
+    login,
+} from "./src/services/database";
 import { Items, Receipts } from "./src/models/models";
 import pool from "./src/services/connections";
 const date = require("date");
@@ -16,6 +21,16 @@ app.use(cors());
 app.post("/login", (req, res) => {
     // console.log(req.body);
     login(req.body["username"], req.body["password"]).then(function (value) {
+        // console.log(`id: ${value} \n`);
+        res.send(value);
+    });
+});
+
+app.put("/login", (req, res) => {
+    // console.log(req.body);
+    addAccount(req.body["username"], req.body["password"]).then(function (
+        value
+    ) {
         // console.log(`id: ${value} \n`);
         res.send(value);
     });
