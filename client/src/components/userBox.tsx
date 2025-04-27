@@ -3,21 +3,29 @@ import React, { JSX, useState } from "react";
 import "../index.css";
 
 export interface UserInput {
-    username: string,
-    selected: number,
-    setSelect: React.Dispatch<React.SetStateAction<number>>,
-    userItems: number[][],
-    setUserItems: React.Dispatch<React.SetStateAction<number[][]>>,
-    itemsUser: number[],
-    setItemsUser: React.Dispatch<React.SetStateAction<number[]>>
+    userInputs: string[];
+    setUserInputs: React.Dispatch<React.SetStateAction<string[]>>;
+    selected: number;
+    setSelect: React.Dispatch<React.SetStateAction<number>>;
+    userItems: number[][];
+    setUserItems: React.Dispatch<React.SetStateAction<number[][]>>;
+    itemsUser: number[];
+    setItemsUser: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
 const UserBox = (self: UserInput): JSX.Element => {
-    const [inputs, setInputs] = useState([self.username, ""]);
     const [status, setStatus] = useState(0); //-1 = is not a user/error; 0 = have not checked; 1 = checking; 2 = is user
 
     async function handleAddInput() {
-        if (inputs[inputs.length - 1] == "") {
+        if (self.userInputs[self.userInputs.length - 1] == "") {
+            //If nothing there
+            return;
+        }
+
+        let findUser = (value: string) => {
+            return value == self.userInputs[self.userInputs.length - 1];
+        };
+        if (self.userInputs.slice(0,-1).find(findUser) != undefined) {
             return;
         }
 
@@ -26,7 +34,9 @@ const UserBox = (self: UserInput): JSX.Element => {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "POST",
-                body: JSON.stringify(inputs[inputs.length - 1]), //Last name in inputs array
+                body: JSON.stringify(
+                    self.userInputs[self.userInputs.length - 1]
+                ), //Last name in inputs array
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -38,9 +48,9 @@ const UserBox = (self: UserInput): JSX.Element => {
         }
 
         // CHANGE STATUS
-        let curr_input = [...inputs];
+        let curr_input = [...self.userInputs];
         curr_input.push("");
-        setInputs(curr_input);
+        self.setUserInputs(curr_input);
 
         let curr_userItems = [...self.userItems];
         curr_userItems.push([]);
@@ -48,20 +58,20 @@ const UserBox = (self: UserInput): JSX.Element => {
     }
 
     const handleChange = (event: any) => {
-        let curr_input = [...inputs];
-        curr_input[inputs.length - 1] = event.target.value;
-        setInputs(curr_input);
+        let curr_input = [...self.userInputs];
+        curr_input[self.userInputs.length - 1] = event.target.value;
+        self.setUserInputs(curr_input);
         console.log(curr_input);
     };
 
     const handleDeleteInput = (index: number) => {
-        const newArray = [...inputs];
+        const newArray = [...self.userInputs];
         newArray.splice(index, 1);
-        setInputs(newArray);
+        self.setUserInputs(newArray);
 
         let curr_itemUsers = [...self.itemsUser];
-        for (let i = 0; i < self.userItems[index].length; i++){
-            curr_itemUsers[self.userItems[index][i]] -= 1
+        for (let i = 0; i < self.userItems[index].length; i++) {
+            curr_itemUsers[self.userItems[index][i]] -= 1;
         }
         self.setItemsUser(curr_itemUsers);
 
@@ -69,8 +79,7 @@ const UserBox = (self: UserInput): JSX.Element => {
         curr_userItems.splice(index, 1);
         self.setUserItems(curr_userItems);
 
-
-        if (self.selected == index){
+        if (self.selected == index) {
             self.setSelect(-1);
         }
     };
@@ -91,16 +100,15 @@ const UserBox = (self: UserInput): JSX.Element => {
                     Add User
                 </button>
             </div>
-            {inputs.map((user, index) => (
+            {self.userInputs.map((user, index) => (
                 <div className="input-container" key={index}>
-                    {index < inputs.length - 1 && (
+                    {index < self.userInputs.length - 1 && (
                         <button
                             style={{ background: setColor(index) }}
                             onClick={() => {
                                 if (self.selected != index) {
                                     self.setSelect(index);
-                                }
-                                else{
+                                } else {
                                     self.setSelect(-1);
                                 }
                             }}
@@ -109,7 +117,7 @@ const UserBox = (self: UserInput): JSX.Element => {
                             {user}
                         </button>
                     )}
-                    {index == inputs.length - 1 && (
+                    {index == self.userInputs.length - 1 && (
                         <input
                             name="usr"
                             value={user}
@@ -118,7 +126,7 @@ const UserBox = (self: UserInput): JSX.Element => {
                         />
                     )}
 
-                    {index > 0 && index < inputs.length - 1 && (
+                    {index > 0 && index < self.userInputs.length - 1 && (
                         <button
                             onClick={() => handleDeleteInput(index)}
                             className="input-button"

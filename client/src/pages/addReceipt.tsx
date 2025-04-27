@@ -18,15 +18,37 @@ const AddReceipt = ({ username }: AddReceiptInput): JSX.Element => {
     const [selected, setSelect] = useState(-1); //-1 No button selected; Any other number is index
     const [userItems, setUserItems] = useState<number[][]>([[]]);
     const [itemsUser, setItemsUser] = useState<number[]>([0]);
+    const [userInputs, setUserInputs] = useState([username, ""]);
 
     if (username == "") {
         return <Navigate to="/" />;
     }
     async function submitReceipt(inputs: ItemInput[]) {
         //Do something here
-        console.log(inputs);
+        let newItemContributes : Array<Array<string>> = [];
+        for (let i = 0; i < inputs.length; i++) {
+            newItemContributes.push([]);
+        }
+        for (let i = 0; i < userItems.length; i++) {
+            for (let j = 0; j < userItems[i].length; j++) {
+                newItemContributes[userItems[i][j]].push(userInputs[i]);
+            }
+        }
 
-        const data = [inputs, username];
+        let newItemInputs = [];
+
+        for (let i = 0; i < inputs.length; i++) {
+            let curr: ItemInput = inputs[i];
+            newItemInputs.push({
+                name: curr.name,
+                price: curr.price,
+                amount: curr.amount,
+                contributes: newItemContributes[i],
+            });
+        }
+
+        const data = [username, newItemInputs];
+        console.log(data);
         try {
             const response = await fetch("http://localhost:3001/AddReceipt", {
                 //CHANGE ENDPOINT HERE
@@ -57,7 +79,8 @@ const AddReceipt = ({ username }: AddReceiptInput): JSX.Element => {
             </h1>
             <div className="container2">
                 <Userbox
-                    username={username}
+                    userInputs={userInputs}
+                    setUserInputs={setUserInputs}
                     selected={selected}
                     setSelect={setSelect}
                     userItems={userItems}
