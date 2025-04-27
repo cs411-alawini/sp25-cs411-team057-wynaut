@@ -43,7 +43,7 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
             });
         }
 
-        const data = [username, newItemInputs];
+        const data = {user: username, items: newItemInputs};
         console.log(data);
         try {
             const response = await fetch("http://localhost:3001/AddReceipt", {
