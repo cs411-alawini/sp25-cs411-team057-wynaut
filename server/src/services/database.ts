@@ -85,19 +85,18 @@ export async function getItem(itemID: number): Promise<Items> {
     return (rows as Items[])[0];
 }
 
+export async function billSplit(receiptID: number): Promise<{UserId: number, Paid: number}>{
+    const sqlQuery = `Call billSplit(${receiptID});`;
+    const [rows] = await pool.query(sqlQuery);
+    return (rows as [{UserId: number, Paid: number}])[0];
+}
+
+export async function updateUserSpending(userID: number): Promise<void>{
+    const sqlQuery = `Call UpdateUserSpending(${userID});`;
+    pool.query(sqlQuery);
+}
 // Testing
 async function main() {
-    // await addReceipt({
-    //     UserID: 1,
-    //     PurchaseDate: "2025-04-09",
-    //     Seller: "TestSell",
-    // });
-    // await addItem({
-    //     Category: "Education",
-    //     ReceiptID: 1,
-    //     ItemName: "TestItem",
-    //     Price: 1.01,
-    // });
     // getReceipt(1000).then((results) => {
     //     console.log(results);
     // });
@@ -128,6 +127,10 @@ async function main() {
     // login({Username: "TestUser", Password: "12"}).then((results) => {
     //     console.log(results);
     // });
+    billSplit(1021).then((results) =>{
+        console.log(results);
+    });
+    updateUserSpending(1000);
 }
 
 main();
