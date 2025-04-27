@@ -28,7 +28,7 @@ const AddReceipt = ({ username }: AddReceiptInput): JSX.Element => {
 
         const data = [inputs, username];
         try {
-            const response = await fetch("http://localhost:3001/addReceipt", {
+            const response = await fetch("http://localhost:3001/AddReceipt", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "PUT",
