@@ -10,10 +10,16 @@ export async function getAllReceipts(userID: number): Promise<Receipts[]> {
 export async function addAccount(
     Username: string,
     Password: string
-): Promise<void> {
-    const sqlQuery = `Insert Into Accounts(Username, Password, Income, MinIncome, MaxIncome) 
+): Promise<number> {
+    try {
+        const sqlQuery = `Insert Into Accounts(Username, Password, Income, MinIncome, MaxIncome) 
                         VALUES ('${Username}', '${Password}', null, null, null)`;
-    await pool.query(sqlQuery);
+        await pool.query(sqlQuery);
+        return 1;
+    } catch (err) {
+        console.error((err as Error).message);
+        return -1;
+    }
 }
 
 export async function login(

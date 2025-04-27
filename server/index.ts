@@ -23,17 +23,18 @@ app.post("/login", (req, res) => {
     login(req.body["username"], req.body["password"]).then(function (value) {
         // console.log(`id: ${value} \n`);
         res.send(value);
-    });
+    }).catch((err) => {res.send(-1);});
 });
 
 app.put("/login", (req, res) => {
     // console.log(req.body);
-    addAccount(req.body["username"], req.body["password"]).then(function (
-        value
-    ) {
-        // console.log(`id: ${value} \n`);
-        res.send(value);
-    });
+    addAccount(req.body["username"], req.body["password"]).then(function (value) {
+        if (value == 1) {
+            res.send(1);
+        } else {
+            res.send(0);
+        }
+    }).catch((err) => {res.send(-1);});
 });
 
 app.put("/addReceipt", (req: Request, res: Response) => {
@@ -71,10 +72,10 @@ app.put("/addReceipt", (req: Request, res: Response) => {
             }
         }
 
-        res.send("accepted");
+        res.send(1);
 
         console.log(new_receipt_id);
-    });
+    }).catch((err) => res.send(-1));
 });
 
 app.listen(PORT, () => {
