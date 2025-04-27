@@ -1,4 +1,4 @@
-import React, { JSX } from "react";
+import React, { JSX, useState } from "react";
 import Itembox, { ItemInput } from "../components/itemBox";
 import Userbox, { UserInput } from "../components/userBox";
 
@@ -10,13 +10,17 @@ import {
     Navigate,
 } from "react-router-dom";
 
-interface userIn {
+interface AddReceiptInput {
     username: string;
 }
 
-const AddReceipt = ({ username }: userIn): JSX.Element => {
+const AddReceipt = ({ username }: AddReceiptInput): JSX.Element => {
+    const [selected, setSelect] = useState(-1); //-1 No button selected; Any other number is index
+    const [userItems, setUserItems] = useState<number[][]>([[]]);
+    const [itemsUser, setItemsUser] = useState<number[]>([0]);
+
     if (username == "") {
-        return <Navigate to="/"/>;
+        return <Navigate to="/" />;
     }
     async function submitReceipt(inputs: ItemInput[]) {
         //Do something here
@@ -30,7 +34,6 @@ const AddReceipt = ({ username }: userIn): JSX.Element => {
                 method: "PUT",
                 body: JSON.stringify(data),
             });
-            console.log("GOT HERE");
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
@@ -53,8 +56,24 @@ const AddReceipt = ({ username }: userIn): JSX.Element => {
                 </div>
             </h1>
             <div className="container2">
-                <Userbox username={username}/>
-                <Itembox onSubmit={submitReceipt} />
+                <Userbox
+                    username={username}
+                    selected={selected}
+                    setSelect={setSelect}
+                    userItems={userItems}
+                    setUserItems={setUserItems}
+                    itemsUser={itemsUser}
+                    setItemsUser={setItemsUser}
+                />
+                <Itembox
+                    onSubmit={submitReceipt}
+                    selected={selected}
+                    setSelect={setSelect}
+                    userItems={userItems}
+                    setUserItems={setUserItems}
+                    itemsUser={itemsUser}
+                    setItemsUser={setItemsUser}
+                />
             </div>
         </div>
     );
