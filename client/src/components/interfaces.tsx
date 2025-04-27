@@ -8,6 +8,12 @@ export interface ItemInput {
     amount: number;
 }
 
+export interface CategoryInput {
+    category: string;
+    budget: number;
+    spent: number;
+}
+
 export interface UserInput {
     userInputs: string[];
     setUserInputs: React.Dispatch<React.SetStateAction<string[]>>;

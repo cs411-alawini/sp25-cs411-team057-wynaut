@@ -164,9 +164,9 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
                         Add New Receipt
                     </button>
                 </Link>
-                <Link to="/AddCategory">
+                <Link to="/ViewCategory">
                     <button className="input-button">
-                        Add New Category
+                        View Categories
                     </button>
                 </Link>
                 <Link to="/ViewReceipt">
