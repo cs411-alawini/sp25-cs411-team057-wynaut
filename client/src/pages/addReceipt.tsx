@@ -1,21 +1,28 @@
-import React, {JSX} from "react";
-import InputBox, { ItemInput } from "../components/itemBox";
-import { BrowserRouter as Router, Routes, Route, Link, Navigate  } from "react-router-dom";
+import React, { JSX } from "react";
+import Itembox, { ItemInput } from "../components/itemBox";
+import Userbox, { UserInput } from "../components/userBox";
 
-interface userIn{
-    userID: number
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Link,
+    Navigate,
+} from "react-router-dom";
+
+interface userIn {
+    username: string;
 }
 
-const AddReceipt = ({userID} : userIn): JSX.Element => {
-
-    if (userID == 0) {
-        return <Navigate to='/'  />
+const AddReceipt = ({ username }: userIn): JSX.Element => {
+    if (username == "") {
+        return <Navigate to="/"/>;
     }
     async function submitReceipt(inputs: ItemInput[]) {
         //Do something here
         console.log(inputs);
 
-        const data = [inputs, userID];
+        const data = [inputs, username];
         try {
             const response = await fetch("http://localhost:3001/addReceipt", {
                 //CHANGE ENDPOINT HERE
@@ -45,10 +52,12 @@ const AddReceipt = ({userID} : userIn): JSX.Element => {
                     </Link>
                 </div>
             </h1>
-            <InputBox onSubmit={submitReceipt} />
+            <div className="container2">
+                <Userbox username={username}/>
+                <Itembox onSubmit={submitReceipt} />
+            </div>
         </div>
     );
-
 };
 
 export default AddReceipt;

@@ -4,20 +4,20 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/homePage";
 import AddReceipt from "./pages/addReceipt";
 
-export interface IDstate{
-    userID : number
-    setUserID: React.Dispatch<React.SetStateAction<number>>
+export interface UserState{
+    username : string
+    setUsername: React.Dispatch<React.SetStateAction<string>>
 }
 
 const App: React.FC = () => {
-    const [userID, setUserID] = useState(0);
+    const [username, setUsername] = useState("Test");
 
 
     return (
         <Router>
             <Routes>
-                <Route path="/AddReceipt" element={<AddReceipt userID={userID}/>}  />
-                <Route path="/" element={<HomePage userID={userID} setUserID={setUserID}/>} />
+                <Route path="/AddReceipt" element={<AddReceipt username={username}/>}  />
+                <Route path="/" element={<HomePage username={username} setUsername={setUsername}/>} />
             </Routes>
         </Router>
     );

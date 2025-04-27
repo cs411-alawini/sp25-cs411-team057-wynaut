@@ -1,5 +1,5 @@
 import { stringify } from "querystring";
-import React, { useState } from "react";
+import React, { JSX, useState }  from "react";
 import "../index.css";
 
 export interface ItemInput {
@@ -12,7 +12,7 @@ interface ItemBoxProps {
     onSubmit: (input: ItemInput[]) => void;
 }
 
-const ItemBox: React.FC<ItemBoxProps> = (IBProps) => {
+const ItemBox = (IBProps : ItemBoxProps) : JSX.Element => {
     const [inputs, setInputs] = useState([
         { name: "Enter Item Name", price: "0.00", amount: 0 },
     ]);
@@ -28,9 +28,6 @@ const ItemBox: React.FC<ItemBoxProps> = (IBProps) => {
         ]);
     };
 
-    const printer = (event: any) => {
-        console.log(event.target.value);
-    };
     const handleChange = (event: any, index: number, inputIndex: number) => {
         let value: string = event.target.value;
         let onChangeValue: ItemInput[] = [...inputs];
