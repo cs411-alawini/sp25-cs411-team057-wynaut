@@ -54,15 +54,19 @@ export async function addReceipt(
     return (maxNum as [{ maxNum: number }])[0].maxNum;
 }
 
-export async function addItem(item: Omit<Items, "ItemId">): Promise<void> {
+export async function addItem(item: Omit<Items, "ItemId">): Promise<number> {
     let sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES ('${item.Category}', ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
 
     if (item.Category == null) {
         sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES (${item.Category}, ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
-
     }
-    
+
     await pool.query(sqlQuery);
+    const [maxNum] = await pool.query(
+        "Select Max(ItemID) as maxNum From Items"
+    );
+
+    return (maxNum as [{ maxNum: number }])[0].maxNum;
 }
 
 export async function addContributes(contributes: Contributes): Promise<void>{
