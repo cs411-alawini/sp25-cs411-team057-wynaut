@@ -1,16 +1,13 @@
 import { log } from "console";
 import React, { useState, JSX } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { IDstate } from "../App";
-interface loginType {
-    username: string;
-    password: string;
-}
+import { UserState } from "../components/interfaces";
 
-const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
-    console.log(userID);
+const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
+    console.log(username);
+
     const [loginInfo, setInfo] = useState({ username: "", password: "" });
-    const [loginStatus, setLogin] = useState(0); //-1 = failed to login 0 = not login yet 1 = in process 2 = logged in
+    const [loginStatus, setLogin] = useState(2); //-1 = failed to login 0 = not login yet 1 = in process 2 = logged in
     const [createStatus, setCreate] = useState(0); //-1 = failed to create 0 = not created yet 1 = in process 2 = created
 
     const buttonTextLogin = () => {
@@ -65,14 +62,13 @@ const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
             console.log(new_id);
 
             if (new_id) {
-                setLogin(2); //Move this where we test if it works
+                setLogin(2); 
 
-                setUserID(new_id);
+                setUsername(loginInfo.username);
             } else {
                 setLogin(-1);
             }
 
-            // Do something to check if it works?
         } catch (error) {
             console.error((error as Error).message);
             setLogin(-1);
@@ -95,15 +91,14 @@ const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
             } else {
                 setCreate(2);
             }
-
-            // Do something to check if it works?
+            
         } catch (error) {
             console.error((error as Error).message);
             setCreate(-1);
         }
     }
 
-    if (userID == 0 && loginStatus != 2) {
+    if (username == "" && loginStatus != 2) {
         //No userID set and hasn't logged in yet
         return (
             <div className="container">
@@ -166,7 +161,17 @@ const HomePage = ({ userID, setUserID }: IDstate): JSX.Element => {
                 <h1> Home Page :D</h1>
                 <Link to="/AddReceipt">
                     <button className="input-button">
-                        Manual Receipt Adder
+                        Add New Receipt
+                    </button>
+                </Link>
+                <Link to="/ViewCategory">
+                    <button className="input-button">
+                        View Categories
+                    </button>
+                </Link>
+                <Link to="/ViewReceipt">
+                    <button className="input-button">
+                        View Previous Receipts 
                     </button>
                 </Link>
             </div>

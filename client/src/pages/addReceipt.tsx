@@ -1,34 +1,50 @@
-import React from "react";
-import InputBox, { ItemInput } from "../components/itemBox";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import React, { JSX, useState } from "react";
+import Itembox from "../components/itemBox";
+import Userbox from "../components/userBox";
+import {
+    BrowserRouter as Router,
+    Routes,
+    Route,
+    Link,
+    Navigate,
+} from "react-router-dom";
+import { UsernameInput, ItemInput, UserInput } from "../components/interfaces";
 
-interface AddReceiptProps {
-    userID: number;
-}
+const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
+    const [selected, setSelect] = useState(-1); //-1 No button selected; Any other number is index
+    const [userItems, setUserItems] = useState<number[][]>([[]]);
+    const [itemsUser, setItemsUser] = useState<number[]>([0]);
+    const [userInputs, setUserInputs] = useState([username, ""]);
 
-const AddReceipt: React.FC<AddReceiptProps> = () => {
+    if (username == "") {
+        return <Navigate to="/" />;
+    }
     async function submitReceipt(inputs: ItemInput[]) {
         //Do something here
-        console.log(inputs);
-
-        const message = "Please enter a userID to store this with.";
-        let promptedValue = -1;
-        while (true) {
-            const input = prompt(message);
-            if (input === null) {
-                alert("Invalid input. Please enter a number.");
-                continue;
+        let newItemContributes : Array<Array<string>> = [];
+        for (let i = 0; i < inputs.length; i++) {
+            newItemContributes.push([]);
+        }
+        for (let i = 0; i < userItems.length; i++) {
+            for (let j = 0; j < userItems[i].length; j++) {
+                newItemContributes[userItems[i][j]].push(userInputs[i]);
             }
-            const num = Number(input);
-            if (!isNaN(num)) {
-                promptedValue = num;
-                break;
-            }
-            alert("Invalid input. Please enter a number.");
         }
 
-        console.log(promptedValue);
-        const data = [inputs, promptedValue];
+        let newItemInputs = [];
+
+        for (let i = 0; i < inputs.length; i++) {
+            let curr: ItemInput = inputs[i];
+            newItemInputs.push({
+                name: curr.name,
+                price: curr.price,
+                amount: curr.amount,
+                contributes: newItemContributes[i],
+            });
+        }
+
+        const data = [username, newItemInputs];
+        console.log(data);
         try {
             const response = await fetch("http://localhost:3001/AddReceipt", {
                 //CHANGE ENDPOINT HERE
@@ -36,7 +52,6 @@ const AddReceipt: React.FC<AddReceiptProps> = () => {
                 method: "PUT",
                 body: JSON.stringify(data),
             });
-            console.log("GOT HERE");
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
@@ -52,13 +67,33 @@ const AddReceipt: React.FC<AddReceiptProps> = () => {
         <div>
             <h1 className="container">
                 <div className="general-outline">
-                    Receipt Manual Inputter
+                    New Receipt
                     <Link to="/">
                         <button className="input-button">Return to Home</button>
                     </Link>
                 </div>
             </h1>
-            <InputBox onSubmit={submitReceipt} />
+            <div className="container2">
+                <Userbox
+                    userInputs={userInputs}
+                    setUserInputs={setUserInputs}
+                    selected={selected}
+                    setSelect={setSelect}
+                    userItems={userItems}
+                    setUserItems={setUserItems}
+                    itemsUser={itemsUser}
+                    setItemsUser={setItemsUser}
+                />
+                <Itembox
+                    onSubmit={submitReceipt}
+                    selected={selected}
+                    setSelect={setSelect}
+                    userItems={userItems}
+                    setUserItems={setUserItems}
+                    itemsUser={itemsUser}
+                    setItemsUser={setItemsUser}
+                />
+            </div>
         </div>
     );
 };

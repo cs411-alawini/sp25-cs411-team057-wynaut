@@ -1,24 +1,23 @@
 import { stringify } from "querystring";
-import React, { useState } from "react";
+import React, { JSX, useState }  from "react";
 import "../index.css";
+import { ItemInput, ItemBoxInputs } from "./interfaces";
 
-export interface ItemInput {
-    name: string;
-    price: string;
-    amount: number;
-}
 
-interface ItemBoxProps {
-    onSubmit: (input: ItemInput[]) => void;
-}
 
-const ItemBox: React.FC<ItemBoxProps> = (IBProps) => {
+
+const ItemBox = (self : ItemBoxInputs) : JSX.Element => {
     const [inputs, setInputs] = useState([
         { name: "Enter Item Name", price: "0.00", amount: 0 },
     ]);
 
     const submitInput = () => {
-        IBProps.onSubmit(inputs);
+        for (let i = 0; i < self.itemsUser.length; i++){
+            if (self.itemsUser[i] == 0){
+                return;
+            }
+        }
+        self.onSubmit(inputs);
     };
 
     const handleAddInput = () => {
@@ -26,17 +25,18 @@ const ItemBox: React.FC<ItemBoxProps> = (IBProps) => {
             ...inputs,
             { name: "Enter Item Name", price: "0.00", amount: 0 },
         ]);
+
+        let curr_itemUsers = [...self.itemsUser];
+        curr_itemUsers.push(0);
+        self.setItemsUser(curr_itemUsers);
     };
 
-    const printer = (event: any) => {
-        console.log(event.target.value);
-    };
     const handleChange = (event: any, index: number, inputIndex: number) => {
         let value: string = event.target.value;
         let onChangeValue: ItemInput[] = [...inputs];
 
-        console.log(!isNaN(parseFloat("012asdasd")));
-        console.log(parseFloat("a012asdasd"));
+        // console.log(!isNaN(parseFloat("012asdasd")));
+        // console.log(parseFloat("a012asdasd"));
 
         let ans: ItemInput = onChangeValue[index];
         if (inputIndex === 0) {
@@ -66,10 +66,72 @@ const ItemBox: React.FC<ItemBoxProps> = (IBProps) => {
     };
 
     const handleDeleteInput = (index: number) => {
-        const newArray = [...inputs];
+        let newArray = [...inputs];
         newArray.splice(index, 1);
         setInputs(newArray);
+        
+        let curr_itemUsers = [...self.itemsUser];
+        curr_itemUsers.splice(index,1);
+        self.setItemsUser(curr_itemUsers);
+
+        let curr_userItems = [...self.userItems];
+        for (let i = 0; i < curr_userItems.length; i++){
+            let equalJ = -1;
+            for (let j = 0; j < curr_userItems[i].length; j++){
+                if (curr_userItems[i][j] == index){
+                    equalJ = j;
+                }
+                else if (curr_userItems[i][j] > index){
+                    curr_userItems[i][j] -= 1;
+                }
+            }
+            if (equalJ != -1){
+                curr_userItems[i].splice(equalJ, 1);
+            }
+        }
+        self.setUserItems(curr_userItems);
     };
+
+
+    const setItemColor = (index: number) => {
+        
+        let findInd = (i : number) => {return i == index}
+        let indExist = self.userItems[self.selected].findIndex(findInd);
+
+        
+        if (indExist != -1){
+            return "pink";
+        }
+        return "white";
+    }
+
+    const setItemValidColor = (index: number) => {
+        if (self.itemsUser[index] != 0){
+            return "white";
+        }
+        return "red";
+    }
+
+    const selectItem = (index: number) => {
+        let findInd = (i : number) => {return i == index}
+        let indExist = self.userItems[self.selected].findIndex(findInd);
+        let curr_userItems = [...self.userItems];
+        let curr_itemUsers = [...self.itemsUser];
+
+
+        if (indExist != -1){
+            curr_userItems[self.selected].splice(indExist, 1);
+            curr_itemUsers[index] -= 1
+        }
+        else{
+            curr_userItems[self.selected].push(index);
+            curr_itemUsers[index] += 1
+        }
+        self.setUserItems(curr_userItems);
+        self.setItemsUser(curr_itemUsers);
+
+        console.log(self.itemsUser);
+    }
 
     return (
         <div className="container">
@@ -89,6 +151,7 @@ const ItemBox: React.FC<ItemBoxProps> = (IBProps) => {
             {inputs.map((item, index) => (
                 <div className="input-container" key={index}>
                     <input
+                        style={{background : setItemValidColor(index)}}
                         name="name"
                         type="text"
                         value={item.name}
@@ -109,6 +172,17 @@ const ItemBox: React.FC<ItemBoxProps> = (IBProps) => {
                         onChange={(event) => handleChange(event, index, 2)}
                         className="general-outline"
                     />
+                    {
+                        self.selected != -1 &&
+                        <button
+                            style={{background: setItemColor(index)}}
+                            onClick={() => {selectItem(index)}}
+                            className="input-button"
+                        >
+                            Select
+                        </button>
+                    }
+                    
                     {inputs.length > 1 && (
                         <button
                             onClick={() => handleDeleteInput(index)}
