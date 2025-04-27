@@ -22,6 +22,16 @@ export async function addAccount(
     }
 }
 
+export async function verifyAccount(
+    Username: string,
+): Promise<number> {
+    const sqlQuery = `Select UserID From Accounts Where Username = '${Username}'`;
+    const [rows] = await pool.query(sqlQuery);
+    const User = rows as [{ UserID: number }];
+    if ((User.length as number) == 0) return 0;
+    else return User[0].UserID;
+}
+
 export async function login(
     Username: string,
     Password: string
@@ -45,7 +55,13 @@ export async function addReceipt(
 }
 
 export async function addItem(item: Omit<Items, "ItemId">): Promise<void> {
-    const sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES (${item.Category}, ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
+    let sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES ('${item.Category}', ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
+
+    if (item.Category == null) {
+        sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES (${item.Category}, ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
+
+    }
+    
     await pool.query(sqlQuery);
 }
 
