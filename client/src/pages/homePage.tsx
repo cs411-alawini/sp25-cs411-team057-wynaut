@@ -1,12 +1,7 @@
 import { log } from "console";
 import React, { useState, JSX } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { UserState } from "../App";
-
-interface loginType {
-    username: string;
-    password: string;
-}
+import { UserState } from "../components/interfaces";
 
 const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
     console.log(username);
@@ -166,7 +161,17 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
                 <h1> Home Page :D</h1>
                 <Link to="/AddReceipt">
                     <button className="input-button">
-                        Manual Receipt Adder
+                        Add New Receipt
+                    </button>
+                </Link>
+                <Link to="/AddCategory">
+                    <button className="input-button">
+                        Add New Category
+                    </button>
+                </Link>
+                <Link to="/ViewReceipt">
+                    <button className="input-button">
+                        View Previous Receipts 
                     </button>
                 </Link>
             </div>

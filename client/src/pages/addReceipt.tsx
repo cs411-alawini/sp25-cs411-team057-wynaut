@@ -1,7 +1,6 @@
 import React, { JSX, useState } from "react";
-import Itembox, { ItemInput } from "../components/itemBox";
-import Userbox, { UserInput } from "../components/userBox";
-
+import Itembox from "../components/itemBox";
+import Userbox from "../components/userBox";
 import {
     BrowserRouter as Router,
     Routes,
@@ -9,12 +8,9 @@ import {
     Link,
     Navigate,
 } from "react-router-dom";
+import { UsernameInput, ItemInput, UserInput } from "../components/interfaces";
 
-interface AddReceiptInput {
-    username: string;
-}
-
-const AddReceipt = ({ username }: AddReceiptInput): JSX.Element => {
+const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
     const [selected, setSelect] = useState(-1); //-1 No button selected; Any other number is index
     const [userItems, setUserItems] = useState<number[][]>([[]]);
     const [itemsUser, setItemsUser] = useState<number[]>([0]);
@@ -71,7 +67,7 @@ const AddReceipt = ({ username }: AddReceiptInput): JSX.Element => {
         <div>
             <h1 className="container">
                 <div className="general-outline">
-                    Receipt Manual Inputter
+                    New Receipt
                     <Link to="/">
                         <button className="input-button">Return to Home</button>
                     </Link>

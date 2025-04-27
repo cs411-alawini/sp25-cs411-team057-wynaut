@@ -1,17 +1,8 @@
 import { stringify } from "querystring";
 import React, { JSX, useState } from "react";
 import "../index.css";
+import { UserInput } from "./interfaces";
 
-export interface UserInput {
-    userInputs: string[];
-    setUserInputs: React.Dispatch<React.SetStateAction<string[]>>;
-    selected: number;
-    setSelect: React.Dispatch<React.SetStateAction<number>>;
-    userItems: number[][];
-    setUserItems: React.Dispatch<React.SetStateAction<number[][]>>;
-    itemsUser: number[];
-    setItemsUser: React.Dispatch<React.SetStateAction<number[]>>;
-}
 
 const UserBox = (self: UserInput): JSX.Element => {
     const [status, setStatus] = useState(0); //-1 = is not a user/error; 0 = have not checked; 1 = checking; 2 = is user

@@ -1,22 +1,10 @@
 import { stringify } from "querystring";
 import React, { JSX, useState }  from "react";
 import "../index.css";
+import { ItemInput, ItemBoxInputs } from "./interfaces";
 
-export interface ItemInput {
-    name: string;
-    price: string;
-    amount: number;
-}
 
-interface ItemBoxInputs {
-    onSubmit: (input: ItemInput[]) => void;
-    selected: number,
-    setSelect: React.Dispatch<React.SetStateAction<number>>
-    userItems: number[][],
-    setUserItems: React.Dispatch<React.SetStateAction<number[][]>>,
-    itemsUser: number[],
-    setItemsUser: React.Dispatch<React.SetStateAction<number[]>>
-}
+
 
 const ItemBox = (self : ItemBoxInputs) : JSX.Element => {
     const [inputs, setInputs] = useState([
