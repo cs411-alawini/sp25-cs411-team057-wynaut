@@ -1,4 +1,4 @@
-import { Receipts, Items, Accounts } from "../models/models";
+import { Receipts, Items, Accounts, Contributes, Budget } from "../models/models";
 import pool from "./connections";
 import { RowDataPacket } from "mysql2";
 
@@ -49,6 +49,16 @@ export async function addItem(item: Omit<Items, "ItemId">): Promise<void> {
     await pool.query(sqlQuery);
 }
 
+export async function addContributes(contributes: Contributes): Promise<void>{
+    const sqlQuery = `Insert Into Contributes(UserID, ItemID, Percentage) VALUES (${contributes.UserID}, ${contributes.ItemID}, ${contributes.Percentage});`;
+    await pool.query(sqlQuery);
+}
+
+export async function addBudget(budget: Budget): Promise<void>{
+    const sqlQuery = `Insert Into Budget(Category, UserID, Budget, Spent) VALUES ('${budget.Category}', ${budget.UserID}, ${budget.Budget}, ${budget.Spent});`;
+    await pool.query(sqlQuery);
+}
+
 export async function deleteReceipt(receiptID: number): Promise<void> {
     const sqlQuery = `Delete From Receipts Where ReceiptID = ${receiptID};`;
     await pool.query(sqlQuery);
@@ -95,6 +105,7 @@ export async function updateUserSpending(userID: number): Promise<void>{
     const sqlQuery = `Call UpdateUserSpending(${userID});`;
     pool.query(sqlQuery);
 }
+
 // Testing
 async function main() {
     // getReceipt(1000).then((results) => {
@@ -127,10 +138,17 @@ async function main() {
     // login({Username: "TestUser", Password: "12"}).then((results) => {
     //     console.log(results);
     // });
-    billSplit(1021).then((results) =>{
-        console.log(results);
-    });
-    updateUserSpending(1000);
+    // billSplit(1021).then((results) =>{
+    //     console.log(results);
+    // });
+    // updateUserSpending(1000);
+    // addContributes({UserID: 1000,
+    //     ItemID: 9408,
+    //     Percentage: 0.01});
+    // addBudget({Category: "TestCat2",
+    //     UserID: 1000,
+    //     Budget: null,
+    //     Spent: 0});
 }
 
 main();
