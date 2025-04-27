@@ -1,14 +1,14 @@
 import { log } from "console";
 import React, { useState, JSX } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { UserState } from "../components/interfaces";
-
+import { UserState, CategoryInput } from "../components/interfaces";
 const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
     console.log(username);
 
     const [loginInfo, setInfo] = useState({ username: "", password: "" });
     const [loginStatus, setLogin] = useState(2); //-1 = failed to login 0 = not login yet 1 = in process 2 = logged in
     const [createStatus, setCreate] = useState(0); //-1 = failed to create 0 = not created yet 1 = in process 2 = created
+    const [data, setData] = useState<Array<CategoryInput>>([]);
 
     const buttonTextLogin = () => {
         //Shows when trying to login
@@ -98,6 +98,8 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
         }
     }
 
+
+    //RETURN ---------------------------------------------------------------------------------------------------------------------------
     if (username == "" && loginStatus != 2) {
         //No userID set and hasn't logged in yet
         return (
@@ -165,7 +167,7 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
                     </button>
                 </Link>
                 <Link to="/ViewCategory">
-                    <button className="input-button">
+                    <button className="input-button" >
                         View Categories
                     </button>
                 </Link>

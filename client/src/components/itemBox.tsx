@@ -148,6 +148,13 @@ const ItemBox = (self : ItemBoxInputs) : JSX.Element => {
                     Submit
                 </button>
             </div>
+
+            <div className="input-container" >
+                <input value={"Name"} className="general-outline" readOnly/>
+                <input value={"Price"} className="general-outline" readOnly/>
+                <input value={"Quantity"} className="general-outline" readOnly/>
+            </div>
+
             {inputs.map((item, index) => (
                 <div className="input-container" key={index}>
                     <input
