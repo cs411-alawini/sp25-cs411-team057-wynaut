@@ -2,25 +2,25 @@ export interface Accounts {
     UserID: number;
     Username: string;
     Password: string;
-    Income: Float32Array;
-    MinIncome: Float32Array;
-    MaxIncome: Float32Array;
+    Income: number | null;
+    MinIncome: number | null;
+    MaxIncome: number | null;
 }
 export interface AverageExpense {
-    MinIncome: Float32Array;
-    MaxIncome: Float32Array;
-    AvgExpense: Float32Array;
+    MinIncome: number;
+    MaxIncome: number;
+    AvgExpense: number;
 }
 export interface Budget {
     Category: string;
     UserID: number;
-    Budget: Float32Array;
-    Spent: Float32Array;
+    Budget: number | null;
+    Spent: number;
 }
 export interface Contributes {
     UserID: number;
     ItemID: number;
-    Percentage: Float32Array;
+    Percentage: number;
 }
 export interface Items {
     ItemId: number;
