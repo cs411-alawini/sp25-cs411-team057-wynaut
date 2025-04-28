@@ -19,7 +19,8 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
             const response = await fetch("http://localhost:3001/ViewCategory", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "Get",
+                method: "POST",
+                body: JSON.stringify({user: username})
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
