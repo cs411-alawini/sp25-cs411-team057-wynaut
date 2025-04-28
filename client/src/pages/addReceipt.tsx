@@ -9,7 +9,7 @@ import {
     Navigate,
 } from "react-router-dom";
 import {
-    UsernameInput,
+    UserReceiptState,
     ItemInput,
     UserInput,
     CategoryInput,
@@ -17,19 +17,48 @@ import {
 
 export const selected_button_color = "rgb(128, 191, 192)"
 
-const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
+const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserReceiptState): JSX.Element => {
     const [selected, setSelect] = useState(-1); //-1 No button selected; Any other number is index
     const [userItems, setUserItems] = useState<number[][]>([[]]);
-    const [itemsUser, setItemsUser] = useState<number[]>([0]);
+    const [itemsUser, setItemsUser] = useState<number[]>([0]); 
     const [userInputs, setUserInputs] = useState([username, ""]);
-
     const [data, setData] = useState<Array<any>>([]); //Its an array like this [[CategoryInput, index],[CategoryInput, index]...];
     // index = -1 for new categories and ordered 0->length-1 for existing ones
     const [loaded, setLoaded] = useState(false);
-
     const [seller, setSeller] = useState("");
     const [submitStatus, setSubmitStatus] = useState(0); //0 is no err; 1 is no seller
 
+
+    async function loadReceipt() {
+        if (receiptID == -1){
+            return;
+        }
+        
+        try {
+            const response = await fetch("http://localhost:3001/GetReceipt", {
+                //CHANGE ENDPOINT HERE
+                headers: { "Content-type": "application/json" },
+                method: "Post",
+                body: JSON.stringify({user: username})
+            });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            //Response
+            const json = await response.json();
+            let curr_data = [...data];
+            curr_data.splice(0);
+            for (let i = 0; i < json.length; i++) {
+                curr_data.push([json[i], i]);
+            }
+            setData(curr_data);
+            setLoaded(true);
+        } catch (error) {
+            console.error((error as Error).message);
+        }
+        // { user: username, seller: seller, items: newItemInputs }
+    }
     async function getCategories() {
         try {
             const response = await fetch("http://localhost:3001/ViewCategory", {

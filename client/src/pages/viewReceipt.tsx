@@ -6,18 +6,20 @@ import {
     Link,
     Navigate,
 } from "react-router-dom";
-import { UsernameInput, Receipt } from "../components/interfaces";
+import { UserReceiptState, Receipt } from "../components/interfaces";
 
-const ViewReceipt = ({ username }: UsernameInput): JSX.Element => {
+const ViewReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserReceiptState): JSX.Element => {
     const [oldReceipts, setOldReceipts] = useState<Array<Receipt>>([]);
-    const [loaded, setLoaded] = useState(false);
+    const [loaded, setLoaded] = useState(false); //loading of initial page (fetch receipts)
+    const [status, setStatus] = useState(0); //0 = viewing all receipt; 1 = viewing single receipt
 
     async function getOldReceipt() {
         try {
             const response = await fetch("http://localhost:3001/ViewReceipt", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "Get",
+                method: "Post",
+                body: JSON.stringify({user: username})
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -41,6 +43,22 @@ const ViewReceipt = ({ username }: UsernameInput): JSX.Element => {
         setLoaded(true);
     }
 
+    async function getReceipt(ReceiptID : number) {
+        try {
+            const response = await fetch("http://localhost:3001/ViewSingleReceipt", {
+                //CHANGE ENDPOINT HERE
+                headers: { "Content-type": "application/json" },
+                method: "Post",
+                body: JSON.stringify({user: username, receiptID: ReceiptID})
+            });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error((error as Error).message);
+        }
+    }
+
     useEffect(() => {
         getOldReceipt();
     }, []); // Empty dependency array ensures the effect runs only once on mount
@@ -60,7 +78,7 @@ const ViewReceipt = ({ username }: UsernameInput): JSX.Element => {
                 </div>
 
                 {!loaded && <text> Loading... </text>}
-                {loaded && (
+                {loaded && status == 0 && (
                     <div className="container">
                         <div className="input-container">
                             <input
@@ -96,7 +114,7 @@ const ViewReceipt = ({ username }: UsernameInput): JSX.Element => {
                                     value={receipt.Seller}
                                     readOnly
                                 ></input>
-                                <button className="input-button">
+                                <button className="input-button" >
                                     View
                                 </button>
                             </div>

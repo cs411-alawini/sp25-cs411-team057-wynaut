@@ -39,20 +39,20 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
         }
 
         //TEST CODE
-        // let test_data: Array<CategoryInput> = [
-        //     { category: "test1", budget: 10, spent: 13 },
-        //     { category: "test2", budget: 12, spent: 11 },
-        //     { category: "test3", budget: 14, spent: 16 },
-        //     { category: "test4", budget: 15, spent: 14 },
-        //     { category: "test5", budget: 16, spent: 21 },
-        // ];
-        // let curr_data = [...data];
-        // curr_data.splice(0);
-        // for (let i = 0; i < test_data.length; i++) {
-        //     curr_data.push([test_data[i], test_data[i].category]);
-        // }
-        // setData(curr_data);
-        // setLoaded(true);
+        let test_data: Array<CategoryInput> = [
+            { category: "test1", budget: 10, spent: 13 },
+            { category: "test2", budget: 12, spent: 11 },
+            { category: "test3", budget: 14, spent: 16 },
+            { category: "test4", budget: 15, spent: 14 },
+            { category: "test5", budget: 16, spent: 21 },
+        ];
+        let curr_data = [...data];
+        curr_data.splice(0);
+        for (let i = 0; i < test_data.length; i++) {
+            curr_data.push([test_data[i], test_data[i].category]);
+        }
+        setData(curr_data);
+        setLoaded(true);
         //_____
     }
 
@@ -153,13 +153,13 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                     onChange={(event) => {
                                         let curr_data = [...data];
                                         if (
-                                            !isNaN(
-                                                Number(event.target.value)
-                                            ) ||
-                                            event.target.value === ""
+                                            !isNaN(Number(event.target.value))
                                         ) {
                                             curr_data[index][0].budget =
                                                 parseInt(event.target.value);
+                                        }
+                                        if (event.target.value === "") {
+                                            curr_data[index][0].budget = 0;
                                         }
                                         setData([...curr_data]);
                                     }}

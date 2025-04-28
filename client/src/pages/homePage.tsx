@@ -1,8 +1,13 @@
 import { log } from "console";
 import React, { useState, JSX } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { UserState, CategoryInput } from "../components/interfaces";
-const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
+import { UserReceiptState, CategoryInput } from "../components/interfaces";
+const HomePage = ({
+    username,
+    setUsername,
+    receiptID,
+    setReceiptID,
+}: UserReceiptState): JSX.Element => {
     console.log(username);
 
     const [loginInfo, setInfo] = useState({ username: "", password: "" });
@@ -62,13 +67,12 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
             console.log(new_id);
 
             if (new_id) {
-                setLogin(2); 
+                setLogin(2);
 
                 setUsername(loginInfo.username);
             } else {
                 setLogin(-1);
             }
-
         } catch (error) {
             console.error((error as Error).message);
             setLogin(-1);
@@ -91,13 +95,11 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
             } else {
                 setCreate(2);
             }
-            
         } catch (error) {
             console.error((error as Error).message);
             setCreate(-1);
         }
     }
-
 
     //RETURN ---------------------------------------------------------------------------------------------------------------------------
     if (username == "" && loginStatus != 2) {
@@ -162,18 +164,21 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
             <div className="container">
                 <h1> Home Page :D</h1>
                 <Link to="/AddReceipt">
-                    <button className="input-button">
+                    <button
+                        className="input-button"
+                        onClick={() => {
+                            setReceiptID(-1);
+                        }}
+                    >
                         Add New Receipt
                     </button>
                 </Link>
                 <Link to="/ViewCategory">
-                    <button className="input-button" >
-                        View Categories
-                    </button>
+                    <button className="input-button">View Categories</button>
                 </Link>
                 <Link to="/ViewReceipt">
                     <button className="input-button">
-                        View Previous Receipts 
+                        View Previous Receipts
                     </button>
                 </Link>
             </div>
