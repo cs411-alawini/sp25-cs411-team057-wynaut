@@ -58,10 +58,10 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
 
     async function submit() {
         try {
-            const response = await fetch("http://localhost:3001/checkUser", {
+            const response = await fetch("http://localhost:3001/updateBudget", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "POST",
+                method: "PUT",
                 body: JSON.stringify(data),
             });
             if (!response.ok) {
