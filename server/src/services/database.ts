@@ -168,6 +168,11 @@ export async function updateUserSpending(userID: number): Promise<void>{
     pool.query(sqlQuery);
 }
 
+export async function findOverspending(userID: number): Promise<{category: string, spent: number, budget: number}>{
+    const sqlQuery = `Call FindOverspending(${userID});`;
+    const [rows] = await pool.query(sqlQuery);
+    return (rows as [{category: string, spent: number, budget: number}])[0];
+}
 // Testing
 async function main() {
     // getReceipt(1000).then((results) => {
@@ -237,7 +242,9 @@ async function main() {
     // getContributes(1000, 9408).then((results) =>{
     //     console.log(results);
     // });
-    
+    await findOverspending(1000).then((results) => {
+        console.log(results);
+    });
 
 }
 
