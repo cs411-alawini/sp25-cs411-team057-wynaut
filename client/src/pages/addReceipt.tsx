@@ -15,44 +15,177 @@ import {
     CategoryInput,
 } from "../components/interfaces";
 
-export const selected_button_color = "rgb(128, 191, 192)"
+export const selected_button_color = "rgb(128, 191, 192)";
 
-const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserReceiptState): JSX.Element => {
+const AddReceipt = ({
+    username,
+    setUsername,
+    receiptID,
+    setReceiptID,
+}: UserReceiptState): JSX.Element => {
     const [selected, setSelect] = useState(-1); //-1 No button selected; Any other number is index
     const [userItems, setUserItems] = useState<number[][]>([[]]); //user : items that they have //----
     const [itemsUser, setItemsUser] = useState<number[]>([0]); //Amt of users per item //----
     const [userInputs, setUserInputs] = useState([username, ""]); //----
-    const [data, setData] = useState<Array<any>>([]); //Its an array like this [CategoryInput]; diff from the one in viewCategories
+    const [data, setData] = useState<Array<CategoryInput>>([]); //Its an array like this [CategoryInput]; diff from the one in viewCategories
+    const [inputs, setInputs] = useState<Array<ItemInput>>([
+        { name: "Enter Item Name", price: "0.00", amount: 0, category: "" },
+    ]); //----
 
     const [loaded, setLoaded] = useState(false);
-    const [seller, setSeller] = useState("");
+    const [seller, setSeller] = useState(""); //----
     const [submitStatus, setSubmitStatus] = useState(0); //0 is no err; 1 is no seller
 
-
     async function loadReceipt() {
-        if (receiptID == -1){
-            return;
-        }
-        
+        console.log("LOADING RECEIPT")
         try {
             const response = await fetch("http://localhost:3001/GetReceipt", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "Post",
-                body: JSON.stringify({user: username})
+                body: JSON.stringify({ user: username }),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
-            // { user: username, seller: seller, items: newItemInputs }
-            const json: any = await response.json();
-            setSeller(json.seller)
 
-            //Response
-            
+            const json: any = await response.json();
+            setSeller(json.seller);
+
+            let userItemdict: { [id: string]: Array<number> } = {};
+            let user_set = new Set<string>();
+            let new_itemsUser = [...itemsUser];
+            new_itemsUser.splice(0);
+            let new_inputs = [...inputs];
+            new_inputs.splice(0);
+    
+            for (let i = 0; i < json.items.length; i++) {
+                //get all items
+                let curr_item = json.items[i];
+    
+                for (let j = 0; j < curr_item.contributes.length; j++) {
+                    // get all users for each item
+                    let curr_user = curr_item.contributes[j];
+    
+                    if (!(curr_user in userItemdict)) {
+                        userItemdict[curr_user] = [];
+                    }
+                    userItemdict[curr_user].push(i);
+                    user_set.add(curr_user);
+                }
+                new_itemsUser.push(json.items[i].contributes.length);
+                new_inputs.push({
+                    name: curr_item.name,
+                    price: curr_item.price,
+                    amount: curr_item.amount,
+                    category: curr_item.category,
+                });
+            }
+            setInputs(new_inputs);
+            user_set.delete(username);
+            setItemsUser(new_itemsUser);
+    
+            let new_userItems = [...userItems];
+            let new_userInputs = [...userInputs];
+            new_userInputs.splice(1)
+            user_set.forEach((element) => {
+                new_userItems.push([]);
+                new_userInputs.push(element);
+            });
+            setUserInputs([...new_userInputs, ""]);
+    
+            console.log(userItemdict);
+            for (let i = 0; i < new_userInputs.length; i++) {
+                new_userItems[i] = userItemdict[new_userInputs[i]];
+            }
+            setUserItems(new_userItems);
         } catch (error) {
             console.error((error as Error).message);
         }
+
+        // TESTING ------------
+        // let newItemInputs = [
+        //     {
+        //         name: "Lost",
+        //         price: 1,
+        //         amount: 2,
+        //         category: "",
+        //         contributes: ["Test"],
+        //     },
+        //     {
+        //         name: "Lost2",
+        //         price: 3,
+        //         amount: 4,
+        //         category: "test1",
+        //         contributes: ["Test2"],
+        //     },
+        // ];
+
+        // let test_data = {
+        //     user: username,
+        //     seller: "testingSeller",
+        //     items: newItemInputs,
+        // };
+
+        // const json: any = test_data;
+        // setSeller(json.seller);
+
+        // let userItemdict: { [id: string]: Array<number> } = {};
+        // let user_set = new Set<string>();
+        // let new_itemsUser = [...itemsUser];
+        // new_itemsUser.splice(0);
+        // let new_inputs = [...inputs];
+        // new_inputs.splice(0);
+
+        // for (let i = 0; i < json.items.length; i++) {
+        //     //get all items
+        //     let curr_item = json.items[i];
+        //     console.log("item", curr_item)
+
+        //     for (let j = 0; j < curr_item.contributes.length; j++) {
+        //         // get all users for each item
+        //         let curr_user = curr_item.contributes[j];
+        //         console.log("user", curr_user)
+
+        //         if (!(curr_user in userItemdict)) {
+        //             userItemdict[curr_user] = [];
+        //         }
+        //         userItemdict[curr_user].push(i);
+        //         user_set.add(curr_user);
+        //     }
+        //     new_itemsUser.push(json.items[i].contributes.length);
+        //     new_inputs.push({
+        //         name: curr_item.name,
+        //         price: curr_item.price,
+        //         amount: curr_item.amount,
+        //         category: curr_item.category,
+        //     });
+        // }
+        // setInputs(new_inputs);
+        // user_set.delete(username);
+        // setItemsUser(new_itemsUser);
+
+        // let new_userItems = [...userItems];
+        // let new_userInputs = [...userInputs];
+        // new_userInputs.splice(1)
+        // user_set.forEach((element) => {
+        //     new_userItems.push([]);
+        //     new_userInputs.push(element);
+        // });
+        // setUserInputs([...new_userInputs, ""]);
+
+        // console.log(userItemdict);
+        // for (let i = 0; i < new_userInputs.length; i++) {
+        //     console.log(new_userInputs[i], userItemdict[new_userInputs[i]])
+        //     new_userItems[i] = userItemdict[new_userInputs[i]];
+        // }
+        // setUserItems(new_userItems);
+        // console.log("new_itemsUser", new_itemsUser)
+        // console.log("new_userItems", new_userItems)
+        // console.log("new_userInputs", new_userInputs)
+        // console.log("new_inputs", new_inputs)
+        // console.log("seller", json.seller)
+        // -------------------
     }
     async function getCategories() {
         try {
@@ -60,7 +193,7 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "Post",
-                body: JSON.stringify({user: username})
+                body: JSON.stringify({ user: username }),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -70,7 +203,7 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
             const json: Array<CategoryInput> = await response.json();
             let curr_data = [...data];
             curr_data.splice(0);
-            setData([...curr_data, ... json]);
+            setData([...curr_data, ...json]);
             setLoaded(true);
         } catch (error) {
             console.error((error as Error).message);
@@ -86,15 +219,13 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
         ];
         let curr_data = [...data];
         curr_data.splice(0);
-        setData([...curr_data, ... test_data]);
+        setData([...curr_data, ...test_data]);
         setLoaded(true);
         //_____
-
-        console.log("HERE");
     }
 
     async function submitReceipt(inputs: ItemInput[]) {
-        if (seller == ""){
+        if (seller == "") {
             setSubmitStatus(1);
             return;
         }
@@ -124,8 +255,7 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
             });
         }
 
-        const data2 = { user: username, seller: seller, items: newItemInputs };
-        console.log(data2);
+        const data2 = { user: username, seller: seller, receiptID: receiptID, items: newItemInputs };
         try {
             const response = await fetch("http://localhost:3001/AddReceipt", {
                 //CHANGE ENDPOINT HERE
@@ -138,13 +268,13 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
             }
 
             const json = await response.json();
-            console.log(json.status);
         } catch (error) {
             console.error((error as Error).message);
         }
     }
 
     useEffect(() => {
+        loadReceipt();
         getCategories();
     }, []); // Empty dependency array ensures the effect runs only once on mount
 
@@ -157,10 +287,15 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
         <div className="container">
             <h1 className="container">
                 <div className="general-outline">
-                    New Receipt
+                    Receipt
+                    {receiptID == -1 &&
                     <Link to="/">
-                        <button className="input-button">Return to Home</button>
-                    </Link>
+                        <button className="input-button"> Return to Home</button>
+                    </Link>}
+                    {receiptID != -1 &&
+                    <Link to="/ViewReceipt">
+                        <button className="input-button" onClick={()=>{setReceiptID(-1)}}> Return to Receipt History</button>
+                    </Link>}
                 </div>
             </h1>
             <div className="container2" style={{ margin: 30 }}>
@@ -172,7 +307,15 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
                         setSeller(event.target.value);
                     }}
                 ></input>
-                {submitStatus == 1 && <text className="general-outline" style={{background: "pink"}}> No seller! </text>}
+                {submitStatus == 1 && (
+                    <text
+                        className="general-outline"
+                        style={{ background: "pink" }}
+                    >
+                        {" "}
+                        No seller!{" "}
+                    </text>
+                )}
             </div>
             <div className="container3">
                 <Userbox
@@ -188,6 +331,8 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
                 {!loaded && <text> Loading... </text>}
                 {loaded && (
                     <Itembox
+                        inputs={inputs}
+                        setInputs={setInputs}
                         data={data}
                         setData={setData}
                         onSubmit={submitReceipt}

@@ -41,8 +41,10 @@ export interface UserInput {
 
 
 export interface ItemBoxInputs {
-    data: any[]
-    setData: React.Dispatch<React.SetStateAction<any[]>>
+    inputs: ItemInput[]
+    setInputs: React.Dispatch<React.SetStateAction<Array<ItemInput>>>
+    data: CategoryInput[]
+    setData: React.Dispatch<React.SetStateAction<CategoryInput[]>>
     onSubmit: (input: ItemInput[]) => void;
     selected: number,
     setSelect: React.Dispatch<React.SetStateAction<number>>

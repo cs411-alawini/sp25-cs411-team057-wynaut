@@ -8,7 +8,12 @@ import {
 } from "react-router-dom";
 import { UserReceiptState, Receipt } from "../components/interfaces";
 
-const ViewReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserReceiptState): JSX.Element => {
+const ViewReceipt = ({
+    username,
+    setUsername,
+    receiptID,
+    setReceiptID,
+}: UserReceiptState): JSX.Element => {
     const [oldReceipts, setOldReceipts] = useState<Array<Receipt>>([]);
     const [loaded, setLoaded] = useState(false); //loading of initial page (fetch receipts)
     const [status, setStatus] = useState(0); //0 = viewing all receipt; 1 = viewing single receipt
@@ -19,11 +24,17 @@ const ViewReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRec
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "Post",
-                body: JSON.stringify({user: username})
+                body: JSON.stringify({ user: username }),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
+
+            const json: Array<Receipt> = await response.json();
+            let curr_Receipts = [...oldReceipts];
+            curr_Receipts.splice(0);
+            setOldReceipts([...curr_Receipts, ...json]);
+            setLoaded(true);
         } catch (error) {
             console.error((error as Error).message);
         }
@@ -41,22 +52,6 @@ const ViewReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRec
         curr_Receipts.splice(0);
         setOldReceipts([...curr_Receipts, ...test_data]);
         setLoaded(true);
-    }
-
-    async function getReceipt(ReceiptID : number) {
-        try {
-            const response = await fetch("http://localhost:3001/ViewSingleReceipt", {
-                //CHANGE ENDPOINT HERE
-                headers: { "Content-type": "application/json" },
-                method: "Post",
-                body: JSON.stringify({user: username, receiptID: ReceiptID})
-            });
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-        } catch (error) {
-            console.error((error as Error).message);
-        }
     }
 
     useEffect(() => {
@@ -114,9 +109,16 @@ const ViewReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRec
                                     value={receipt.Seller}
                                     readOnly
                                 ></input>
-                                <button className="input-button" >
-                                    View
-                                </button>
+                                <Link to="/AddReceipt">
+                                    <button
+                                        className="input-button"
+                                        onClick={() => {
+                                            setReceiptID(receipt.ReceiptID);
+                                        }}
+                                    >
+                                        View
+                                    </button>
+                                </Link>
                             </div>
                         ))}
                     </div>
