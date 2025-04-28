@@ -118,7 +118,7 @@ async function addAll(req: Request) {
         for (let j = 0; j < x["amount"]; j++) {
             let new_item_id = await addItem(new_item);
 
-            console.log(new_item_id);
+            // console.log(new_item_id);
             let new_percent = 100 / x["contributes"].length;
 
             for (let k = 0; k < x["contributes"].length; k++) {
@@ -152,7 +152,7 @@ app.put("/addReceipt", (req: Request, res: Response) => {
 
 async function obtainReceipt(receiptID: number) {
     if (receiptID == -1) {
-        console.log("man wtf");
+        // console.log("man wtf");
         return;
     }
     let new_receipt: Receipts = await getReceipt(receiptID);
@@ -211,8 +211,6 @@ async function obtainReceipt(receiptID: number) {
         items: all_inputs
     }
 
-    console.log(data);
-
     return data;
 }
 
@@ -224,9 +222,15 @@ app.post("/GetReceipt", (req: Request, res: Response) => {
     })
 });
 
-// app.post("/ViewReceipt", (req: Request, res: Response) => {
-//     getAllReceipts(req.body[""])
-// });
+app.post("/ViewReceipt", (req: Request, res: Response) => {
+    verifyAccount(req.body["user"]).then((uid) => {
+        getAllReceipts(uid).then((receipts: Receipts[]) => {
+            res.send(receipts);
+        });
+    });
+});
+
+
 //CATEGORIES
 /*
 {
@@ -265,7 +269,6 @@ app.put("/updateBudget", (req: Request, res: Response) => {
     verifyAccount(req.body["user"]).then((uid) => {
         let data = req.body["new"];
 
-        console.log(data);
         for (let i = 0; i < data.length; i++) {
             let b = data[i];
             let c = b[0];
