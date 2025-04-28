@@ -9,6 +9,7 @@ import {
     addReceipt,
     changeCategoryName,
     getAllBudgets,
+    getAllReceipts,
     getBudget,
     getItemContributes,
     getReceipt,
@@ -223,7 +224,9 @@ app.post("/GetReceipt", (req: Request, res: Response) => {
     })
 });
 
-
+// app.post("/ViewReceipt", (req: Request, res: Response) => {
+//     getAllReceipts(req.body[""])
+// });
 //CATEGORIES
 /*
 {
