@@ -1,42 +1,50 @@
 import { stringify } from "querystring";
-import React, { JSX, useState } from "react";
+import React, { JSX, useEffect, useState } from "react";
 import "../index.css";
-import { ItemInput, ItemBoxInputs } from "./interfaces";
+import { ItemInput, ItemBoxInputs, CategoryInput } from "./interfaces";
+import { selected_button_color } from "../pages/addReceipt";
 
 const ItemBox = (self: ItemBoxInputs): JSX.Element => {
-    const [inputs, setInputs] = useState([
-        { name: "Enter Item Name", price: "0.00", amount: 0, category: "" },
-    ]);
+
     const [showCata, setShowCata] = useState(false);
-
     const [cataArr, setCataArr] = useState([-1]);
+    const [submitStatus, setSubmitStatus] = useState(0); //0 no err; 1 not all items have user; 2 not all items have a cata
 
-
+    const loadCataArr = () => {
+        let new_cataArr = [...cataArr]
+        new_cataArr.splice(0)
+        console.log("ITEMBOX load data", self.data)
+        self.inputs.forEach((element) => {
+            if (element.category == ""){
+                new_cataArr.push(-1)
+            }
+            else{
+                let ind = self.data.findIndex((value : CategoryInput) => {
+                    return value.category == element.category})
+                new_cataArr.push(ind)
+            }
+        })
+        setCataArr(new_cataArr)
+    }
 
     const submitInput = () => {
         for (let i = 0; i < self.itemsUser.length; i++) {
             if (self.itemsUser[i] == 0) {
+                setSubmitStatus(1);
                 return;
             }
         }
-        for (let i = 0; i < inputs.length; i++) {
-            if (inputs[i].category == "") {
-                return;
-            }
-        }
-        self.onSubmit(inputs);
+        setSubmitStatus(0);
+        self.onSubmit(self.inputs);
     };
 
     const handleAddInput = () => {
-        setInputs([
-            ...inputs,
+        self.setInputs([
+            ...self.inputs,
             { name: "Enter Item Name", price: "0.00", amount: 0, category: "" },
         ]);
 
-        setCataArr([
-            ...cataArr,
-            -1,
-        ]);
+        setCataArr([...cataArr, -1]);
 
         let curr_itemUsers = [...self.itemsUser];
         curr_itemUsers.push(0);
@@ -47,7 +55,7 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
 
     const handleChange = (event: any, index: number, inputIndex: number) => {
         let value: string = event.target.value;
-        let onChangeValue: ItemInput[] = [...inputs];
+        let onChangeValue: ItemInput[] = [...self.inputs];
 
         // console.log(!isNaN(parseFloat("012asdasd")));
         // console.log(parseFloat("a012asdasd"));
@@ -76,13 +84,13 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
             }
         }
         onChangeValue[index] = ans;
-        setInputs(onChangeValue);
+        self.setInputs(onChangeValue);
     };
 
     const handleDeleteInput = (index: number) => {
-        let newArray = [...inputs];
+        let newArray = [...self.inputs];
         newArray.splice(index, 1);
-        setInputs(newArray);
+        self.setInputs(newArray);
 
         let newCataArray = [...cataArr];
         newCataArray.splice(index, 1);
@@ -116,7 +124,7 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
         let indExist = self.userItems[self.selected].findIndex(findInd);
 
         if (indExist != -1) {
-            return "pink";
+            return selected_button_color;
         }
         return "white";
     };
@@ -125,15 +133,14 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
         if (self.itemsUser[index] != 0) {
             return "white";
         }
-        return "red";
+        return "pink";
     };
 
     const setCataColor = (index: number, cataIndex: number) => {
-        
         if (cataIndex != cataArr[index]) {
             return "white";
         }
-        return "pink";
+        return selected_button_color;
     };
 
     const selectItem = (index: number) => {
@@ -157,6 +164,10 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
         console.log(self.itemsUser);
     };
 
+
+    useEffect(() => {
+            loadCataArr();
+        }, []);
     return (
         <div className="container">
             <div>
@@ -179,24 +190,36 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
                 >
                     Show/Hide Category
                 </button>
-            </div>
-            <div>
+
                 <button onClick={() => submitInput()} className="input-button">
                     Submit
                 </button>
+                {submitStatus == 1 && (
+                    <text
+                        className="general-outline"
+                        style={{ background: "pink" }}
+                    >
+                        {" "}
+                        Not all items have user!{" "}
+                    </text>
+                )}
+                {/* {submitStatus == 2 && (
+                    <text
+                        className="general-outline"
+                        style={{ background: "pink" }}
+                    >
+                        {" "}
+                        Not all items have catagory!{" "}
+                    </text>
+                )} */}
             </div>
 
             <div className="input-container">
-                <input value={"Name"} className="general-outline" readOnly />
-                <input value={"Price"} className="general-outline" readOnly />
-                <input
-                    value={"Quantity"}
-                    className="general-outline"
-                    readOnly
-                />
+                <input value={"Name"} className="general" readOnly />
+                <input value={"Price"} className="general" readOnly />
+                <input value={"Quantity"} className="general" readOnly />
             </div>
-
-            {inputs.map((item, index) => (
+            {self.inputs.map((item, index) => (
                 <div className="container">
                     <div className="input-container" key={index}>
                         <input
@@ -233,7 +256,7 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
                             </button>
                         )}
 
-                        {inputs.length > 1 && (
+                        {self.inputs.length > 1 && (
                             <button
                                 onClick={() => handleDeleteInput(index)}
                                 className="input-button"
@@ -246,21 +269,33 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
                         {showCata &&
                             self.data.map((category, cataIndex) => (
                                 <button
-                                    style={{ background: setCataColor(index, cataIndex) }}
+                                    style={{
+                                        background: setCataColor(
+                                            index,
+                                            cataIndex
+                                        ),
+                                    }}
                                     className="input-button"
                                     onClick={() => {
-                                        let curr_inputs = [...inputs];
-                                        curr_inputs[index].category = self.data[cataIndex][0].category;
-                                        setInputs(curr_inputs);
+                                        let curr_cataArr = [...cataArr];
+                                        let curr_inputs = [...self.inputs];
 
-                                        let curr_cataArr = [...cataArr]
-                                        curr_cataArr[index] = cataIndex
+                                        if (curr_cataArr[index] == cataIndex) {
+                                            curr_cataArr[index] = -1;
+                                            curr_inputs[index].category = "";
+                                        } else {
+                                            curr_cataArr[index] = cataIndex;
+                                            curr_inputs[index].category =
+                                                self.data[
+                                                    cataIndex
+                                                ].category;
+                                        }
                                         setCataArr(curr_cataArr);
-
-                                        console.log(cataArr)
+                                        self.setInputs(curr_inputs);
+                                        console.log(cataArr);
                                     }}
                                 >
-                                    {category[0].category}
+                                    {category.category}
                                 </button>
                             ))}
                     </div>

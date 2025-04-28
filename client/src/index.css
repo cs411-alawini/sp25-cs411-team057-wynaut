@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
@@ -16,6 +18,12 @@ body {
     border-radius: 4px;
     padding: 8px;
     outline: none;
+}
+
+.general {  /* Makes an outline for something */
+    padding: 8px;
+    outline: none;
+    text-decoration: underline;
 }
 
 .input-container { /* large container for multiple input boxes*/

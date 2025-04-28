@@ -4,18 +4,20 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import HomePage from "./pages/homePage";
 import AddReceipt from "./pages/addReceipt";
-import ViewReciept from "./pages/viewReceipt";
+import ViewReceipt from "./pages/viewReceipt";
 import ViewCategory from "./pages/viewCategory";
 
 const App: React.FC = () => {
     const [username, setUsername] = useState("Test");
+    const [receiptID, setReceiptID] = useState(-1);
+
     return (
         <Router>
             <Routes>
-                <Route path="/AddReceipt" element={<AddReceipt username={username}/>}  />
+                <Route path="/AddReceipt" element={<AddReceipt username={username} setUsername={setUsername} receiptID={receiptID} setReceiptID={setReceiptID}/>}  />
                 <Route path="/ViewCategory" element={<ViewCategory username={username}/>}  />
-                <Route path="/ViewReceipt" element={<ViewReciept username={username}/>}  />
-                <Route path="/" element={<HomePage username={username} setUsername={setUsername}/>} />
+                <Route path="/ViewReceipt" element={<ViewReceipt username={username} setUsername={setUsername} receiptID={receiptID} setReceiptID={setReceiptID}/>}  />
+                <Route path="/" element={<HomePage username={username} setUsername={setUsername} receiptID={receiptID} setReceiptID={setReceiptID}/>} />
             </Routes>
         </Router>
     );

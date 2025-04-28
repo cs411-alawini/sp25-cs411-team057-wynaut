@@ -10,8 +10,7 @@ import {
 import { UsernameInput, CategoryInput } from "../components/interfaces";
 
 const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
-    const [data, setData] = useState<Array<any>>([]); //Its an array like this [[CategoryInput, index],[CategoryInput, index]...]; 
-    // index = -1 for new categories and ordered 0->length-1 for existing ones
+    const [data, setData] = useState<Array<any>>([]); //Its an array like this [[CategoryInput, oldname],[CategoryInput, oldname]...]; oldname = "" for new categories
 
     const [loaded, setLoaded] = useState(false);
     async function getCategories() {
@@ -19,7 +18,8 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
             const response = await fetch("http://localhost:3001/ViewCategory", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "Get",
+                method: "POST",
+                body: JSON.stringify({user: username})
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -30,7 +30,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
             let curr_data = [...data];
             curr_data.splice(0);
             for (let i = 0; i < json.length; i++) {
-                curr_data.push([json[i], i]);
+                curr_data.push([json[i], json[i].category]);
             }
             setData(curr_data);
             setLoaded(true);
@@ -39,30 +39,30 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
         }
 
         //TEST CODE
-        let test_data: Array<CategoryInput> = [
-            { category: "test1", budget: 10, spent: 13 },
-            { category: "test2", budget: 12, spent: 11 },
-            { category: "test3", budget: 14, spent: 16 },
-            { category: "test4", budget: 15, spent: 14 },
-            { category: "test5", budget: 16, spent: 21 },
-        ];
-        let curr_data = [...data];
-        curr_data.splice(0);
-        for (let i = 0; i < test_data.length; i++) {
-            curr_data.push([test_data[i], i]);
-        }
-        setData(curr_data);
-        setLoaded(true);
+        // let test_data: Array<CategoryInput> = [
+        //     { category: "test1", budget: 10, spent: 13 },
+        //     { category: "test2", budget: 12, spent: 11 },
+        //     { category: "test3", budget: 14, spent: 16 },    
+        //     { category: "test4", budget: 15, spent: 14 },
+        //     { category: "test5", budget: 16, spent: 21 },
+        // ];
+        // let curr_data = [...data];
+        // curr_data.splice(0);
+        // for (let i = 0; i < test_data.length; i++) {
+        //     curr_data.push([test_data[i], test_data[i].category]);
+        // }
+        // setData(curr_data);
+        // setLoaded(true);
         //_____
     }
 
     async function submit() {
         try {
-            const response = await fetch("http://localhost:3001/checkUser", {
+            const response = await fetch("http://localhost:3001/updateBudget", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "POST",
-                body: JSON.stringify(data),
+                method: "PUT",
+                body: JSON.stringify({user: username, new: data}),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -78,6 +78,11 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
         getCategories();
     }, []); // Empty dependency array ensures the effect runs only once on mount
 
+    if (username == "") {
+        //To stop people from bypassing login
+        return <Navigate to="/" />;
+    }
+
     return (
         <div>
             <h1 className="container">
@@ -91,10 +96,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                 {loaded && (
                     <div>
                         <div className="input-container">
-                            <button
-                                className="input-button"
-                                onClick={submit}
-                            >
+                            <button className="input-button" onClick={submit}>
                                 Save Changes
                             </button>
                             <button
@@ -107,7 +109,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                             budget: 0,
                                             spent: 0,
                                         },
-                                        -1,
+                                        "",
                                     ]);
                                     setData([...curr_data]);
                                 }}
@@ -117,17 +119,17 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                         </div>
                         <div className="input-container">
                             <input
-                                className="general-outline"
+                                className="general"
                                 value={"Name"}
                                 readOnly
                             />
                             <input
-                                className="general-outline"
+                                className="general"
                                 value={"Budget"}
                                 readOnly
                             />
                             <input
-                                className="general-outline"
+                                className="general"
                                 value={"Spent"}
                                 readOnly
                             />
@@ -151,13 +153,13 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                     onChange={(event) => {
                                         let curr_data = [...data];
                                         if (
-                                            !isNaN(
-                                                Number(event.target.value)
-                                            ) ||
-                                            event.target.value === ""
+                                            !isNaN(Number(event.target.value))
                                         ) {
                                             curr_data[index][0].budget =
                                                 parseInt(event.target.value);
+                                        }
+                                        if (event.target.value === "") {
+                                            curr_data[index][0].budget = 0;
                                         }
                                         setData([...curr_data]);
                                     }}

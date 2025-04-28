@@ -1,10 +1,13 @@
 import { log } from "console";
 import React, { useState, JSX } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { UserState, CategoryInput } from "../components/interfaces";
-const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
-    console.log(username);
-
+import { UserReceiptState, CategoryInput } from "../components/interfaces";
+const HomePage = ({
+    username,
+    setUsername,
+    receiptID,
+    setReceiptID,
+}: UserReceiptState): JSX.Element => {
     const [loginInfo, setInfo] = useState({ username: "", password: "" });
     const [loginStatus, setLogin] = useState(2); //-1 = failed to login 0 = not login yet 1 = in process 2 = logged in
     const [createStatus, setCreate] = useState(0); //-1 = failed to create 0 = not created yet 1 = in process 2 = created
@@ -59,16 +62,13 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
 
             let new_id = JSON.parse(await response.json());
 
-            console.log(new_id);
-
             if (new_id) {
-                setLogin(2); 
+                setLogin(2);
 
                 setUsername(loginInfo.username);
             } else {
                 setLogin(-1);
             }
-
         } catch (error) {
             console.error((error as Error).message);
             setLogin(-1);
@@ -91,13 +91,11 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
             } else {
                 setCreate(2);
             }
-            
         } catch (error) {
             console.error((error as Error).message);
             setCreate(-1);
         }
     }
-
 
     //RETURN ---------------------------------------------------------------------------------------------------------------------------
     if (username == "" && loginStatus != 2) {
@@ -115,10 +113,7 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
                                 ...currloginInfo,
                                 username: event.target.value,
                             }));
-                            console.log({
-                                ...loginInfo,
-                                username: event.target.value,
-                            });
+                            ;
                         }}
                         className="general-outline"
                     />
@@ -135,10 +130,7 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
                                 ...currloginInfo,
                                 password: event.target.value,
                             }));
-                            console.log({
-                                ...loginInfo,
-                                password: event.target.value,
-                            });
+                            ;
                         }}
                         className="general-outline"
                     />
@@ -162,18 +154,21 @@ const HomePage = ({ username, setUsername }: UserState): JSX.Element => {
             <div className="container">
                 <h1> Home Page :D</h1>
                 <Link to="/AddReceipt">
-                    <button className="input-button">
+                    <button
+                        className="input-button"
+                        onClick={() => {
+                            setReceiptID(-1);
+                        }}
+                    >
                         Add New Receipt
                     </button>
                 </Link>
                 <Link to="/ViewCategory">
-                    <button className="input-button" >
-                        View Categories
-                    </button>
+                    <button className="input-button">View Categories</button>
                 </Link>
                 <Link to="/ViewReceipt">
                     <button className="input-button">
-                        View Previous Receipts 
+                        View Previous Receipts
                     </button>
                 </Link>
             </div>
