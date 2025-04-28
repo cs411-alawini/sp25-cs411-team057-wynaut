@@ -6,6 +6,7 @@ export interface ItemInput {
     name: string;
     price: string;
     amount: number;
+    category: string;
 }
 
 export interface CategoryInput {
@@ -31,6 +32,8 @@ export interface UserState{
 }
 
 export interface ItemBoxInputs {
+    data: any[]
+    setData: React.Dispatch<React.SetStateAction<any[]>>
     onSubmit: (input: ItemInput[]) => void;
     selected: number,
     setSelect: React.Dispatch<React.SetStateAction<number>>

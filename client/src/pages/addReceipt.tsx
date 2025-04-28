@@ -1,4 +1,4 @@
-import React, { JSX, useState } from "react";
+import React, { JSX, useState, useEffect } from "react";
 import Itembox from "../components/itemBox";
 import Userbox from "../components/userBox";
 import {
@@ -8,7 +8,12 @@ import {
     Link,
     Navigate,
 } from "react-router-dom";
-import { UsernameInput, ItemInput, UserInput } from "../components/interfaces";
+import {
+    UsernameInput,
+    ItemInput,
+    UserInput,
+    CategoryInput,
+} from "../components/interfaces";
 
 const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
     const [selected, setSelect] = useState(-1); //-1 No button selected; Any other number is index
@@ -16,12 +21,59 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
     const [itemsUser, setItemsUser] = useState<number[]>([0]);
     const [userInputs, setUserInputs] = useState([username, ""]);
 
-    if (username == "") {
-        return <Navigate to="/" />;
+    const [data, setData] = useState<Array<any>>([]); //Its an array like this [[CategoryInput, index],[CategoryInput, index]...];
+    // index = -1 for new categories and ordered 0->length-1 for existing ones
+    const [loaded, setLoaded] = useState(false);
+
+
+    
+    async function getCategories() {
+        try {
+            const response = await fetch("http://localhost:3001/ViewCategory", {
+                //CHANGE ENDPOINT HERE
+                headers: { "Content-type": "application/json" },
+                method: "Get",
+            });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            //Response
+            const json: Array<CategoryInput> = await response.json();
+            let curr_data = [...data];
+            curr_data.splice(0);
+            for (let i = 0; i < json.length; i++) {
+                curr_data.push([json[i], i]);
+            }
+            setData(curr_data);
+            setLoaded(true);
+        } catch (error) {
+            console.error((error as Error).message);
+        }
+
+        //TEST CODE
+        let test_data: Array<CategoryInput> = [
+            { category: "test1", budget: 10, spent: 13 },
+            { category: "test2", budget: 12, spent: 11 },
+            { category: "test3", budget: 14, spent: 16 },
+            { category: "test4", budget: 15, spent: 14 },
+            { category: "test5", budget: 16, spent: 21 },
+        ];
+        let curr_data = [...data];
+        curr_data.splice(0);
+        for (let i = 0; i < test_data.length; i++) {
+            curr_data.push([test_data[i], i]);
+        }
+        setData(curr_data);
+        setLoaded(true);
+        //_____
+
+        console.log("HERE");
     }
+
     async function submitReceipt(inputs: ItemInput[]) {
         //Do something here
-        let newItemContributes : Array<Array<string>> = [];
+        let newItemContributes: Array<Array<string>> = [];
         for (let i = 0; i < inputs.length; i++) {
             newItemContributes.push([]);
         }
@@ -43,7 +95,7 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
             });
         }
 
-        const data = {user: username, items: newItemInputs};
+        const data = { user: username, items: newItemInputs };
         console.log(data);
         try {
             const response = await fetch("http://localhost:3001/AddReceipt", {
@@ -63,6 +115,14 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
         }
     }
 
+    useEffect(() => {
+            getCategories();
+        }, []); // Empty dependency array ensures the effect runs only once on mount
+
+    if (username == "") {
+        return <Navigate to="/" />;
+    }
+
     return (
         <div>
             <h1 className="container">
@@ -73,7 +133,7 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
                     </Link>
                 </div>
             </h1>
-            <div className="container2">
+            <div className="container3">
                 <Userbox
                     userInputs={userInputs}
                     setUserInputs={setUserInputs}
@@ -85,6 +145,8 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
                     setItemsUser={setItemsUser}
                 />
                 <Itembox
+                    data={data}
+                    setData={setData}
                     onSubmit={submitReceipt}
                     selected={selected}
                     setSelect={setSelect}
