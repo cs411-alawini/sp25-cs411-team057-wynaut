@@ -11,23 +11,16 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
     const [showCata, setShowCata] = useState(false);
     const [cataArr, setCataArr] = useState([-1]);
     const [seller, setSeller] = useState("");
-    const [submitStatus, setSubmitStatus] = useState(0) //0 no err; 1 not all items have user; 2 not all items have a cata
-
+    const [submitStatus, setSubmitStatus] = useState(0); //0 no err; 1 not all items have user; 2 not all items have a cata
 
     const submitInput = () => {
         for (let i = 0; i < self.itemsUser.length; i++) {
             if (self.itemsUser[i] == 0) {
-                setSubmitStatus(1)
+                setSubmitStatus(1);
                 return;
             }
         }
-        for (let i = 0; i < inputs.length; i++) {
-            if (inputs[i].category == "") {
-                setSubmitStatus(2)
-                return;
-            }
-        }
-        setSubmitStatus(0)
+        setSubmitStatus(0);
         self.onSubmit(inputs);
     };
 
@@ -183,18 +176,30 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
                 <button onClick={() => submitInput()} className="input-button">
                     Submit
                 </button>
-                {submitStatus == 1 && <text className="general-outline" style={{background: "pink"}}> Not all items have user! </text>}
-                {submitStatus == 2 && <text className="general-outline" style={{background: "pink"}}> Not all items have catagory! </text>}
+                {submitStatus == 1 && (
+                    <text
+                        className="general-outline"
+                        style={{ background: "pink" }}
+                    >
+                        {" "}
+                        Not all items have user!{" "}
+                    </text>
+                )}
+                {/* {submitStatus == 2 && (
+                    <text
+                        className="general-outline"
+                        style={{ background: "pink" }}
+                    >
+                        {" "}
+                        Not all items have catagory!{" "}
+                    </text>
+                )} */}
             </div>
 
             <div className="input-container">
                 <input value={"Name"} className="general" readOnly />
                 <input value={"Price"} className="general" readOnly />
-                <input
-                    value={"Quantity"}
-                    className="general"
-                    readOnly
-                />
+                <input value={"Quantity"} className="general" readOnly />
             </div>
             {inputs.map((item, index) => (
                 <div className="container">
@@ -254,15 +259,21 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
                                     }}
                                     className="input-button"
                                     onClick={() => {
-                                        let curr_inputs = [...inputs];
-                                        curr_inputs[index].category =
-                                            self.data[cataIndex][0].category;
-                                        setInputs(curr_inputs);
-
                                         let curr_cataArr = [...cataArr];
-                                        curr_cataArr[index] = cataIndex;
-                                        setCataArr(curr_cataArr);
+                                        let curr_inputs = [...inputs];
 
+                                        if (curr_cataArr[index] == cataIndex) {
+                                            curr_cataArr[index] = -1;
+                                            curr_inputs[index].category = "";
+                                        } else {
+                                            curr_cataArr[index] = cataIndex;
+                                            curr_inputs[index].category =
+                                                self.data[
+                                                    cataIndex
+                                                ][0].category;
+                                        }
+                                        setCataArr(curr_cataArr);
+                                        setInputs(curr_inputs);
                                         console.log(cataArr);
                                     }}
                                 >
