@@ -268,6 +268,9 @@ const AddReceipt = ({
             }
 
             const json = await response.json();
+
+            // find total cost to users here
+
         } catch (error) {
             console.error((error as Error).message);
         }
