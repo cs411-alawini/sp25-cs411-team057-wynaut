@@ -42,3 +42,10 @@ export interface ItemBoxInputs {
     itemsUser: number[],
     setItemsUser: React.Dispatch<React.SetStateAction<number[]>>
 }
+
+export interface Receipt {
+    ReceiptID: number,
+    UserID: number,
+    PurchaseDate: string,
+    Seller: string
+}

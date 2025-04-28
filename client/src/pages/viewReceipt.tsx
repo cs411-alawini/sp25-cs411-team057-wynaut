@@ -1,4 +1,4 @@
-import React, { JSX, useState } from "react";
+import React, { JSX, useState, useEffect } from "react";
 import {
     BrowserRouter as Router,
     Routes,
@@ -6,10 +6,49 @@ import {
     Link,
     Navigate,
 } from "react-router-dom";
-import { UsernameInput } from "../components/interfaces";
+import { UsernameInput, Receipt } from "../components/interfaces";
 
+const ViewReceipt = ({ username }: UsernameInput): JSX.Element => {
+    const [oldReceipts, setOldReceipts] = useState<Array<Receipt>>([]);
+    const [loaded, setLoaded] = useState(false);
 
-const ViewReciept = ({ username }: UsernameInput): JSX.Element => {
+    async function getOldReceipt() {
+        try {
+            const response = await fetch("http://localhost:3001/ViewReceipt", {
+                //CHANGE ENDPOINT HERE
+                headers: { "Content-type": "application/json" },
+                method: "Get",
+            });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+        } catch (error) {
+            console.error((error as Error).message);
+        }
+
+        let test_data: Array<Receipt> = [
+            { ReceiptID: 1, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+            { ReceiptID: 2, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+            { ReceiptID: 3, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+            { ReceiptID: 4, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+            { ReceiptID: 5, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+            { ReceiptID: 6, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+            { ReceiptID: 7, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+        ];
+        let curr_Receipts = [...oldReceipts];
+        curr_Receipts.splice(0);
+        setOldReceipts([...curr_Receipts, ...test_data]);
+        setLoaded(true);
+    }
+
+    useEffect(() => {
+        getOldReceipt();
+    }, []); // Empty dependency array ensures the effect runs only once on mount
+
+    if (username == "") {
+        //To stop people from bypassing login
+        return <Navigate to="/" />;
+    }
     return (
         <div>
             <h1 className="container">
@@ -19,9 +58,54 @@ const ViewReciept = ({ username }: UsernameInput): JSX.Element => {
                         <button className="input-button">Return to Home</button>
                     </Link>
                 </div>
+
+                {!loaded && <text> Loading... </text>}
+                {loaded && (
+                    <div className="container">
+                        <div className="input-container">
+                            <input
+                                className="general"
+                                value={"ReceiptID"}
+                                readOnly
+                            ></input>
+                            <input
+                                className="general"
+                                value={"PurchaseDate"}
+                                readOnly
+                            ></input>
+                            <input
+                                className="general"
+                                value={"Seller"}
+                                readOnly
+                            ></input>
+                        </div>
+                        {oldReceipts.map((receipt, index) => (
+                            <div className="input-container">
+                                <input
+                                    className="general-outline"
+                                    value={receipt.ReceiptID}
+                                    readOnly
+                                ></input>
+                                <input
+                                    className="general-outline"
+                                    value={receipt.PurchaseDate}
+                                    readOnly
+                                ></input>
+                                <input
+                                    className="general-outline"
+                                    value={receipt.Seller}
+                                    readOnly
+                                ></input>
+                                <button className="input-button">
+                                    View
+                                </button>
+                            </div>
+                        ))}
+                    </div>
+                )}
             </h1>
         </div>
     );
 };
 
-export default ViewReciept;
+export default ViewReceipt;

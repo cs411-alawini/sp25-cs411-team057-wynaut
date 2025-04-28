@@ -15,6 +15,8 @@ import {
     CategoryInput,
 } from "../components/interfaces";
 
+export const selected_button_color = "rgb(128, 191, 192)"
+
 const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
     const [selected, setSelect] = useState(-1); //-1 No button selected; Any other number is index
     const [userItems, setUserItems] = useState<number[][]>([[]]);
@@ -25,8 +27,9 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
     // index = -1 for new categories and ordered 0->length-1 for existing ones
     const [loaded, setLoaded] = useState(false);
 
+    const [seller, setSeller] = useState("");
+    const [submitStatus, setSubmitStatus] = useState(0); //0 is no err; 1 is no seller
 
-    
     async function getCategories() {
         try {
             const response = await fetch("http://localhost:3001/ViewCategory", {
@@ -72,6 +75,12 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
     }
 
     async function submitReceipt(inputs: ItemInput[]) {
+        if (seller == ""){
+            setSubmitStatus(1);
+            return;
+        }
+        setSubmitStatus(0);
+
         //Do something here
         let newItemContributes: Array<Array<string>> = [];
         for (let i = 0; i < inputs.length; i++) {
@@ -95,7 +104,7 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
             });
         }
 
-        const data = { user: username, items: newItemInputs };
+        const data = { user: username, seller: seller, items: newItemInputs };
         console.log(data);
         try {
             const response = await fetch("http://localhost:3001/AddReceipt", {
@@ -116,15 +125,16 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
     }
 
     useEffect(() => {
-            getCategories();
-        }, []); // Empty dependency array ensures the effect runs only once on mount
+        getCategories();
+    }, []); // Empty dependency array ensures the effect runs only once on mount
 
     if (username == "") {
+        //To stop people from bypassing login
         return <Navigate to="/" />;
     }
 
     return (
-        <div>
+        <div className="container">
             <h1 className="container">
                 <div className="general-outline">
                     New Receipt
@@ -133,6 +143,17 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
                     </Link>
                 </div>
             </h1>
+            <div className="container2" style={{ margin: 30 }}>
+                <text className="general"> Seller: </text>
+                <input
+                    value={seller}
+                    className="general-outline"
+                    onChange={(event) => {
+                        setSeller(event.target.value);
+                    }}
+                ></input>
+                {submitStatus == 1 && <text className="general-outline" style={{background: "pink"}}> No seller! </text>}
+            </div>
             <div className="container3">
                 <Userbox
                     userInputs={userInputs}
@@ -144,17 +165,20 @@ const AddReceipt = ({ username }: UsernameInput): JSX.Element => {
                     itemsUser={itemsUser}
                     setItemsUser={setItemsUser}
                 />
-                <Itembox
-                    data={data}
-                    setData={setData}
-                    onSubmit={submitReceipt}
-                    selected={selected}
-                    setSelect={setSelect}
-                    userItems={userItems}
-                    setUserItems={setUserItems}
-                    itemsUser={itemsUser}
-                    setItemsUser={setItemsUser}
-                />
+                {!loaded && <text> Loading... </text>}
+                {loaded && (
+                    <Itembox
+                        data={data}
+                        setData={setData}
+                        onSubmit={submitReceipt}
+                        selected={selected}
+                        setSelect={setSelect}
+                        userItems={userItems}
+                        setUserItems={setUserItems}
+                        itemsUser={itemsUser}
+                        setItemsUser={setItemsUser}
+                    />
+                )}
             </div>
         </div>
     );

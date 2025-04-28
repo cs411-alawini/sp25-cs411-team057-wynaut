@@ -2,28 +2,32 @@ import { stringify } from "querystring";
 import React, { JSX, useState } from "react";
 import "../index.css";
 import { ItemInput, ItemBoxInputs } from "./interfaces";
+import { selected_button_color } from "../pages/addReceipt";
 
 const ItemBox = (self: ItemBoxInputs): JSX.Element => {
     const [inputs, setInputs] = useState([
         { name: "Enter Item Name", price: "0.00", amount: 0, category: "" },
     ]);
     const [showCata, setShowCata] = useState(false);
-
     const [cataArr, setCataArr] = useState([-1]);
-
+    const [seller, setSeller] = useState("");
+    const [submitStatus, setSubmitStatus] = useState(0) //0 no err; 1 not all items have user; 2 not all items have a cata
 
 
     const submitInput = () => {
         for (let i = 0; i < self.itemsUser.length; i++) {
             if (self.itemsUser[i] == 0) {
+                setSubmitStatus(1)
                 return;
             }
         }
         for (let i = 0; i < inputs.length; i++) {
             if (inputs[i].category == "") {
+                setSubmitStatus(2)
                 return;
             }
         }
+        setSubmitStatus(0)
         self.onSubmit(inputs);
     };
 
@@ -33,10 +37,7 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
             { name: "Enter Item Name", price: "0.00", amount: 0, category: "" },
         ]);
 
-        setCataArr([
-            ...cataArr,
-            -1,
-        ]);
+        setCataArr([...cataArr, -1]);
 
         let curr_itemUsers = [...self.itemsUser];
         curr_itemUsers.push(0);
@@ -116,7 +117,7 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
         let indExist = self.userItems[self.selected].findIndex(findInd);
 
         if (indExist != -1) {
-            return "pink";
+            return selected_button_color;
         }
         return "white";
     };
@@ -125,15 +126,14 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
         if (self.itemsUser[index] != 0) {
             return "white";
         }
-        return "red";
+        return "pink";
     };
 
     const setCataColor = (index: number, cataIndex: number) => {
-        
         if (cataIndex != cataArr[index]) {
             return "white";
         }
-        return "pink";
+        return selected_button_color;
     };
 
     const selectItem = (index: number) => {
@@ -179,23 +179,23 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
                 >
                     Show/Hide Category
                 </button>
-            </div>
-            <div>
+
                 <button onClick={() => submitInput()} className="input-button">
                     Submit
                 </button>
+                {submitStatus == 1 && <text className="general-outline" style={{background: "pink"}}> Not all items have user! </text>}
+                {submitStatus == 2 && <text className="general-outline" style={{background: "pink"}}> Not all items have catagory! </text>}
             </div>
 
             <div className="input-container">
-                <input value={"Name"} className="general-outline" readOnly />
-                <input value={"Price"} className="general-outline" readOnly />
+                <input value={"Name"} className="general" readOnly />
+                <input value={"Price"} className="general" readOnly />
                 <input
                     value={"Quantity"}
-                    className="general-outline"
+                    className="general"
                     readOnly
                 />
             </div>
-
             {inputs.map((item, index) => (
                 <div className="container">
                     <div className="input-container" key={index}>
@@ -246,18 +246,24 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
                         {showCata &&
                             self.data.map((category, cataIndex) => (
                                 <button
-                                    style={{ background: setCataColor(index, cataIndex) }}
+                                    style={{
+                                        background: setCataColor(
+                                            index,
+                                            cataIndex
+                                        ),
+                                    }}
                                     className="input-button"
                                     onClick={() => {
                                         let curr_inputs = [...inputs];
-                                        curr_inputs[index].category = self.data[cataIndex][0].category;
+                                        curr_inputs[index].category =
+                                            self.data[cataIndex][0].category;
                                         setInputs(curr_inputs);
 
-                                        let curr_cataArr = [...cataArr]
-                                        curr_cataArr[index] = cataIndex
+                                        let curr_cataArr = [...cataArr];
+                                        curr_cataArr[index] = cataIndex;
                                         setCataArr(curr_cataArr);
 
-                                        console.log(cataArr)
+                                        console.log(cataArr);
                                     }}
                                 >
                                     {category[0].category}

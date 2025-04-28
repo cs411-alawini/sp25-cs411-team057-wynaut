@@ -2,6 +2,7 @@ import { stringify } from "querystring";
 import React, { JSX, useState } from "react";
 import "../index.css";
 import { UserInput } from "./interfaces";
+import { selected_button_color } from "../pages/addReceipt";
 
 
 const UserBox = (self: UserInput): JSX.Element => {
@@ -78,7 +79,7 @@ const UserBox = (self: UserInput): JSX.Element => {
 
     const setColor = (index: number) => {
         if (index == self.selected) {
-            return "pink";
+            return selected_button_color;
         }
         return "white";
     };
