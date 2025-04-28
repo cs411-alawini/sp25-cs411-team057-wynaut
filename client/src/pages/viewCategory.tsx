@@ -62,7 +62,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "PUT",
-                body: JSON.stringify(data),
+                body: JSON.stringify({user: username, new: data}),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
