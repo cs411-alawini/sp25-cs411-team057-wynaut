@@ -2,6 +2,18 @@ export interface UsernameInput {
     username: string;
 }
 
+export interface UserReceiptInput {
+    username: string;
+    receiptID: number;
+}
+
+export interface UserReceiptState{
+    username : string
+    setUsername: React.Dispatch<React.SetStateAction<string>>
+    receiptID: number
+    setReceiptID: React.Dispatch<React.SetStateAction<number>>
+}
+
 export interface ItemInput {
     name: string;
     price: string;
@@ -26,14 +38,13 @@ export interface UserInput {
     setItemsUser: React.Dispatch<React.SetStateAction<number[]>>;
 }
 
-export interface UserState{
-    username : string
-    setUsername: React.Dispatch<React.SetStateAction<string>>
-}
+
 
 export interface ItemBoxInputs {
-    data: any[]
-    setData: React.Dispatch<React.SetStateAction<any[]>>
+    inputs: ItemInput[]
+    setInputs: React.Dispatch<React.SetStateAction<Array<ItemInput>>>
+    data: CategoryInput[]
+    setData: React.Dispatch<React.SetStateAction<CategoryInput[]>>
     onSubmit: (input: ItemInput[]) => void;
     selected: number,
     setSelect: React.Dispatch<React.SetStateAction<number>>
