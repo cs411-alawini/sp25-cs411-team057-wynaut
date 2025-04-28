@@ -1,19 +1,26 @@
 import { stringify } from "querystring";
-import React, { JSX, useState }  from "react";
+import React, { JSX, useState } from "react";
 import "../index.css";
 import { ItemInput, ItemBoxInputs } from "./interfaces";
 
-
-
-
-const ItemBox = (self : ItemBoxInputs) : JSX.Element => {
+const ItemBox = (self: ItemBoxInputs): JSX.Element => {
     const [inputs, setInputs] = useState([
-        { name: "Enter Item Name", price: "0.00", amount: 0 },
+        { name: "Enter Item Name", price: "0.00", amount: 0, category: "" },
     ]);
+    const [showCata, setShowCata] = useState(false);
+
+    const [cataArr, setCataArr] = useState([-1]);
+
+
 
     const submitInput = () => {
-        for (let i = 0; i < self.itemsUser.length; i++){
-            if (self.itemsUser[i] == 0){
+        for (let i = 0; i < self.itemsUser.length; i++) {
+            if (self.itemsUser[i] == 0) {
+                return;
+            }
+        }
+        for (let i = 0; i < inputs.length; i++) {
+            if (inputs[i].category == "") {
                 return;
             }
         }
@@ -23,12 +30,19 @@ const ItemBox = (self : ItemBoxInputs) : JSX.Element => {
     const handleAddInput = () => {
         setInputs([
             ...inputs,
-            { name: "Enter Item Name", price: "0.00", amount: 0 },
+            { name: "Enter Item Name", price: "0.00", amount: 0, category: "" },
+        ]);
+
+        setCataArr([
+            ...cataArr,
+            -1,
         ]);
 
         let curr_itemUsers = [...self.itemsUser];
         curr_itemUsers.push(0);
         self.setItemsUser(curr_itemUsers);
+
+        console.log(self.data);
     };
 
     const handleChange = (event: any, index: number, inputIndex: number) => {
@@ -69,69 +83,79 @@ const ItemBox = (self : ItemBoxInputs) : JSX.Element => {
         let newArray = [...inputs];
         newArray.splice(index, 1);
         setInputs(newArray);
-        
+
+        let newCataArray = [...cataArr];
+        newCataArray.splice(index, 1);
+        setCataArr(newCataArray);
+
         let curr_itemUsers = [...self.itemsUser];
-        curr_itemUsers.splice(index,1);
+        curr_itemUsers.splice(index, 1);
         self.setItemsUser(curr_itemUsers);
 
         let curr_userItems = [...self.userItems];
-        for (let i = 0; i < curr_userItems.length; i++){
+        for (let i = 0; i < curr_userItems.length; i++) {
             let equalJ = -1;
-            for (let j = 0; j < curr_userItems[i].length; j++){
-                if (curr_userItems[i][j] == index){
+            for (let j = 0; j < curr_userItems[i].length; j++) {
+                if (curr_userItems[i][j] == index) {
                     equalJ = j;
-                }
-                else if (curr_userItems[i][j] > index){
+                } else if (curr_userItems[i][j] > index) {
                     curr_userItems[i][j] -= 1;
                 }
             }
-            if (equalJ != -1){
+            if (equalJ != -1) {
                 curr_userItems[i].splice(equalJ, 1);
             }
         }
         self.setUserItems(curr_userItems);
     };
 
-
     const setItemColor = (index: number) => {
-        
-        let findInd = (i : number) => {return i == index}
+        let findInd = (i: number) => {
+            return i == index;
+        };
         let indExist = self.userItems[self.selected].findIndex(findInd);
 
-        
-        if (indExist != -1){
+        if (indExist != -1) {
             return "pink";
         }
         return "white";
-    }
+    };
 
     const setItemValidColor = (index: number) => {
-        if (self.itemsUser[index] != 0){
+        if (self.itemsUser[index] != 0) {
             return "white";
         }
         return "red";
-    }
+    };
+
+    const setCataColor = (index: number, cataIndex: number) => {
+        
+        if (cataIndex != cataArr[index]) {
+            return "white";
+        }
+        return "pink";
+    };
 
     const selectItem = (index: number) => {
-        let findInd = (i : number) => {return i == index}
+        let findInd = (i: number) => {
+            return i == index;
+        };
         let indExist = self.userItems[self.selected].findIndex(findInd);
         let curr_userItems = [...self.userItems];
         let curr_itemUsers = [...self.itemsUser];
 
-
-        if (indExist != -1){
+        if (indExist != -1) {
             curr_userItems[self.selected].splice(indExist, 1);
-            curr_itemUsers[index] -= 1
-        }
-        else{
+            curr_itemUsers[index] -= 1;
+        } else {
             curr_userItems[self.selected].push(index);
-            curr_itemUsers[index] += 1
+            curr_itemUsers[index] += 1;
         }
         self.setUserItems(curr_userItems);
         self.setItemsUser(curr_itemUsers);
 
         console.log(self.itemsUser);
-    }
+    };
 
     return (
         <div className="container">
@@ -142,6 +166,19 @@ const ItemBox = (self : ItemBoxInputs) : JSX.Element => {
                 >
                     Add Item
                 </button>
+
+                <button
+                    onClick={() => {
+                        if (showCata) {
+                            setShowCata(false);
+                        } else {
+                            setShowCata(true);
+                        }
+                    }}
+                    className="input-button"
+                >
+                    Show/Hide Category
+                </button>
             </div>
             <div>
                 <button onClick={() => submitInput()} className="input-button">
@@ -149,55 +186,84 @@ const ItemBox = (self : ItemBoxInputs) : JSX.Element => {
                 </button>
             </div>
 
-            <div className="input-container" >
-                <input value={"Name"} className="general-outline" readOnly/>
-                <input value={"Price"} className="general-outline" readOnly/>
-                <input value={"Quantity"} className="general-outline" readOnly/>
+            <div className="input-container">
+                <input value={"Name"} className="general-outline" readOnly />
+                <input value={"Price"} className="general-outline" readOnly />
+                <input
+                    value={"Quantity"}
+                    className="general-outline"
+                    readOnly
+                />
             </div>
 
             {inputs.map((item, index) => (
-                <div className="input-container" key={index}>
-                    <input
-                        style={{background : setItemValidColor(index)}}
-                        name="name"
-                        type="text"
-                        value={item.name}
-                        onChange={(event) => handleChange(event, index, 0)}
-                        className="general-outline"
-                    />
-                    <input
-                        name="price"
-                        type="text"
-                        value={item.price}
-                        onChange={(event) => handleChange(event, index, 1)}
-                        className="general-outline"
-                    />
-                    <input
-                        name="amount"
-                        type="text"
-                        value={item.amount}
-                        onChange={(event) => handleChange(event, index, 2)}
-                        className="general-outline"
-                    />
-                    {
-                        self.selected != -1 &&
-                        <button
-                            style={{background: setItemColor(index)}}
-                            onClick={() => {selectItem(index)}}
-                            className="input-button"
-                        >
-                            Select
-                        </button>
-                    }
-                    
-                    {inputs.length > 1 && (
-                        <button
-                            onClick={() => handleDeleteInput(index)}
-                            className="input-button"
-                        >
-                            Delete
-                        </button>
-                    )}
+                <div className="container">
+                    <div className="input-container" key={index}>
+                        <input
+                            style={{ background: setItemValidColor(index) }}
+                            name="name"
+                            type="text"
+                            value={item.name}
+                            onChange={(event) => handleChange(event, index, 0)}
+                            className="general-outline"
+                        />
+                        <input
+                            name="price"
+                            type="text"
+                            value={item.price}
+                            onChange={(event) => handleChange(event, index, 1)}
+                            className="general-outline"
+                        />
+                        <input
+                            name="amount"
+                            type="text"
+                            value={item.amount}
+                            onChange={(event) => handleChange(event, index, 2)}
+                            className="general-outline"
+                        />
+                        {self.selected != -1 && (
+                            <button
+                                style={{ background: setItemColor(index) }}
+                                onClick={() => {
+                                    selectItem(index);
+                                }}
+                                className="input-button"
+                            >
+                                Select
+                            </button>
+                        )}
+
+                        {inputs.length > 1 && (
+                            <button
+                                onClick={() => handleDeleteInput(index)}
+                                className="input-button"
+                            >
+                                Delete
+                            </button>
+                        )}
+                    </div>
+                    <div className="container">
+                        {showCata &&
+                            self.data.map((category, cataIndex) => (
+                                <button
+                                    style={{ background: setCataColor(index, cataIndex) }}
+                                    className="input-button"
+                                    onClick={() => {
+                                        let curr_inputs = [...inputs];
+                                        curr_inputs[index].category = self.data[cataIndex][0].category;
+                                        setInputs(curr_inputs);
+
+                                        let curr_cataArr = [...cataArr]
+                                        curr_cataArr[index] = cataIndex
+                                        setCataArr(curr_cataArr);
+
+                                        console.log(cataArr)
+                                    }}
+                                >
+                                    {category[0].category}
+                                </button>
+                            ))}
+                    </div>
                 </div>
             ))}
         </div>

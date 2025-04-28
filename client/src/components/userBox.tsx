@@ -46,6 +46,7 @@ const UserBox = (self: UserInput): JSX.Element => {
         let curr_userItems = [...self.userItems];
         curr_userItems.push([]);
         self.setUserItems(curr_userItems);
+
     }
 
     const handleChange = (event: any) => {
