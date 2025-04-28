@@ -10,8 +10,7 @@ import {
 import { UsernameInput, CategoryInput } from "../components/interfaces";
 
 const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
-    const [data, setData] = useState<Array<any>>([]); //Its an array like this [[CategoryInput, index],[CategoryInput, index]...];
-    // index = -1 for new categories and ordered 0->length-1 for existing ones
+    const [data, setData] = useState<Array<any>>([]); //Its an array like this [[CategoryInput, oldname],[CategoryInput, oldname]...]; oldname = "" for new categories
 
     const [loaded, setLoaded] = useState(false);
     async function getCategories() {
@@ -31,7 +30,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
             let curr_data = [...data];
             curr_data.splice(0);
             for (let i = 0; i < json.length; i++) {
-                curr_data.push([json[i], i]);
+                curr_data.push([json[i], json[i].category]);
             }
             setData(curr_data);
             setLoaded(true);
@@ -40,20 +39,20 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
         }
 
         //TEST CODE
-        let test_data: Array<CategoryInput> = [
-            { category: "test1", budget: 10, spent: 13 },
-            { category: "test2", budget: 12, spent: 11 },
-            { category: "test3", budget: 14, spent: 16 },
-            { category: "test4", budget: 15, spent: 14 },
-            { category: "test5", budget: 16, spent: 21 },
-        ];
-        let curr_data = [...data];
-        curr_data.splice(0);
-        for (let i = 0; i < test_data.length; i++) {
-            curr_data.push([test_data[i], i]);
-        }
-        setData(curr_data);
-        setLoaded(true);
+        // let test_data: Array<CategoryInput> = [
+        //     { category: "test1", budget: 10, spent: 13 },
+        //     { category: "test2", budget: 12, spent: 11 },
+        //     { category: "test3", budget: 14, spent: 16 },
+        //     { category: "test4", budget: 15, spent: 14 },
+        //     { category: "test5", budget: 16, spent: 21 },
+        // ];
+        // let curr_data = [...data];
+        // curr_data.splice(0);
+        // for (let i = 0; i < test_data.length; i++) {
+        //     curr_data.push([test_data[i], test_data[i].category]);
+        // }
+        // setData(curr_data);
+        // setLoaded(true);
         //_____
     }
 
@@ -110,7 +109,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                             budget: 0,
                                             spent: 0,
                                         },
-                                        -1,
+                                        "",
                                     ]);
                                     setData([...curr_data]);
                                 }}
