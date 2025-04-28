@@ -23,7 +23,7 @@ export interface Contributes {
     Percentage: number;
 }
 export interface Items {
-    ItemId: number;
+    ItemID: number;
     Category: string | null;
     ReceiptID: number;
     ItemName: string;

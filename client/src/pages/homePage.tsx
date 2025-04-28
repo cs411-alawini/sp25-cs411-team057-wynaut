@@ -8,8 +8,6 @@ const HomePage = ({
     receiptID,
     setReceiptID,
 }: UserReceiptState): JSX.Element => {
-    console.log(username);
-
     const [loginInfo, setInfo] = useState({ username: "", password: "" });
     const [loginStatus, setLogin] = useState(2); //-1 = failed to login 0 = not login yet 1 = in process 2 = logged in
     const [createStatus, setCreate] = useState(0); //-1 = failed to create 0 = not created yet 1 = in process 2 = created
@@ -64,8 +62,6 @@ const HomePage = ({
 
             let new_id = JSON.parse(await response.json());
 
-            console.log(new_id);
-
             if (new_id) {
                 setLogin(2);
 
@@ -117,10 +113,7 @@ const HomePage = ({
                                 ...currloginInfo,
                                 username: event.target.value,
                             }));
-                            console.log({
-                                ...loginInfo,
-                                username: event.target.value,
-                            });
+                            ;
                         }}
                         className="general-outline"
                     />
@@ -137,10 +130,7 @@ const HomePage = ({
                                 ...currloginInfo,
                                 password: event.target.value,
                             }));
-                            console.log({
-                                ...loginInfo,
-                                password: event.target.value,
-                            });
+                            ;
                         }}
                         className="general-outline"
                     />

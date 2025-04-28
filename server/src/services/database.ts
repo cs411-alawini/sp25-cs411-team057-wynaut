@@ -28,6 +28,18 @@ export async function login(
     if ((User.length as number) == 0) return 0;
     else return User[0].UserID;
 }
+
+export async function getUsername(
+    UserID: number,
+): Promise<string> {
+    const sqlQuery = `Select Username From Accounts Where UserID = '${UserID}'`;
+    const [rows] = await pool.query(sqlQuery);
+    const User = rows as [{ Username: string }];
+    if ((User.length as number) == 0) return '';
+    else return User[0].Username;
+}
+
+
 export async function addAccount(
     Username: string,
     Password: string
@@ -78,8 +90,6 @@ export async function addContributes(contributes: Contributes): Promise<void>{
     await pool.query(sqlQuery);
 }
 
-
-
 export async function deleteReceipt(receiptID: number): Promise<void> {
     const sqlQuery = `Delete From Receipts Where ReceiptID = ${receiptID};`;
     await pool.query(sqlQuery);
@@ -111,7 +121,7 @@ export async function updateReceipt(receipt: Receipts): Promise<void> {
 }
 
 export async function updateItem(item: Items): Promise<void> {
-    const sqlQuery = `Update Items Set Category = '${item.Category}', ItemName = '${item.ItemName}', Price = ${item.Price} Where ItemID = ${item.ItemId};`;
+    const sqlQuery = `Update Items Set Category = '${item.Category}', ItemName = '${item.ItemName}', Price = ${item.Price} Where ItemID = ${item.ItemID};`;
     await pool.query(sqlQuery);
     return;
 }
@@ -145,6 +155,12 @@ export async function getItem(itemID: number): Promise<Items> {
     return (rows as Items[])[0];
 }
 
+export async function getReceiptItems(receiptID: number): Promise<Items[]> {
+    const sqlQuery = `Select * From Items Where ReceiptID = ${receiptID};`;
+    const [rows] = await pool.query(sqlQuery);
+    return rows as Items[];
+}
+
 export async function getAllBudgets(userID:number): Promise<Budget[]>{
     const sqlQuery = `Select * From Budget Where UserID = ${userID};`;
     const [rows] = await pool.query(sqlQuery);
@@ -161,6 +177,12 @@ export async function getContributes(userID:number, itemID:number): Promise<Cont
     const sqlQuery = `Select * From Contributes Where UserID = ${userID} and ItemID = ${itemID};`;
     const [rows] = await pool.query(sqlQuery);
     return (rows as Contributes[])[0];
+}
+
+export async function getItemContributes(itemID:number): Promise<Contributes[]>{
+    const sqlQuery = `Select * From Contributes Where ItemID = ${itemID};`;
+    const [rows] = await pool.query(sqlQuery);
+    return rows as Contributes[];
 }
 
 export async function billSplit(receiptID: number): Promise<{UserId: number, Paid: number}>{
@@ -243,8 +265,10 @@ async function main() {
     // getContributes(1000, 9408).then((results) =>{
     //     console.log(results);
     // });
-    
 
+    // await getReceiptItems(5).then((results) => {
+    //     console.log(results);
+    // });
 }
 
 main();
