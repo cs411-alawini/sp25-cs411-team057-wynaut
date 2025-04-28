@@ -10,7 +10,7 @@ import {
 import { UsernameInput, CategoryInput } from "../components/interfaces";
 
 const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
-    const [data, setData] = useState<Array<any>>([]); //Its an array like this [[CategoryInput, index],[CategoryInput, index]...]; 
+    const [data, setData] = useState<Array<any>>([]); //Its an array like this [[CategoryInput, index],[CategoryInput, index]...];
     // index = -1 for new categories and ordered 0->length-1 for existing ones
 
     const [loaded, setLoaded] = useState(false);
@@ -78,6 +78,11 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
         getCategories();
     }, []); // Empty dependency array ensures the effect runs only once on mount
 
+    if (username == "") {
+        //To stop people from bypassing login
+        return <Navigate to="/" />;
+    }
+
     return (
         <div>
             <h1 className="container">
@@ -91,10 +96,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                 {loaded && (
                     <div>
                         <div className="input-container">
-                            <button
-                                className="input-button"
-                                onClick={submit}
-                            >
+                            <button className="input-button" onClick={submit}>
                                 Save Changes
                             </button>
                             <button
@@ -117,17 +119,17 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                         </div>
                         <div className="input-container">
                             <input
-                                className="general-outline"
+                                className="general"
                                 value={"Name"}
                                 readOnly
                             />
                             <input
-                                className="general-outline"
+                                className="general"
                                 value={"Budget"}
                                 readOnly
                             />
                             <input
-                                className="general-outline"
+                                className="general"
                                 value={"Spent"}
                                 readOnly
                             />
