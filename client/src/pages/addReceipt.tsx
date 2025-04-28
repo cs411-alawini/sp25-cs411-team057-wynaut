@@ -43,12 +43,12 @@ const AddReceipt = ({
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "Post",
-                body: JSON.stringify({ user: username }),
+                body: JSON.stringify({receipt: receiptID}),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
-
+            // { user: username, seller: seller, items: newItemInputs }
             const json: any = await response.json();
             setSeller(json.seller);
 
@@ -192,8 +192,8 @@ const AddReceipt = ({
             const response = await fetch("http://localhost:3001/ViewCategory", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "Post",
-                body: JSON.stringify({ user: username }),
+                method: "POST",
+                body: JSON.stringify({user: username})
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -210,18 +210,23 @@ const AddReceipt = ({
         }
 
         //TEST CODE
-        let test_data: Array<CategoryInput> = [
-            { category: "test1", budget: 10, spent: 13 },
-            { category: "test2", budget: 12, spent: 11 },
-            { category: "test3", budget: 14, spent: 16 },
-            { category: "test4", budget: 15, spent: 14 },
-            { category: "test5", budget: 16, spent: 21 },
-        ];
-        let curr_data = [...data];
-        curr_data.splice(0);
-        setData([...curr_data, ...test_data]);
-        setLoaded(true);
-        //_____
+        // let test_data: Array<CategoryInput> = [
+        //     { category: "test1", budget: 10, spent: 13 },
+        //     { category: "test2", budget: 12, spent: 11 },
+        //     { category: "test3", budget: 14, spent: 16 },
+        //     { category: "test4", budget: 15, spent: 14 },
+        //     { category: "test5", budget: 16, spent: 21 },
+        // ];
+        // let curr_data = [...data];
+        // curr_data.splice(0);
+        // for (let i = 0; i < test_data.length; i++) {
+        //     curr_data.push([test_data[i], i]);
+        // }
+        // setData(curr_data);
+        // setLoaded(true);
+        // //_____
+
+        // console.log("HERE");
     }
 
     async function submitReceipt(inputs: ItemInput[]) {

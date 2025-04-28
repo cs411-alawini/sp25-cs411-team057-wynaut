@@ -18,7 +18,8 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
             const response = await fetch("http://localhost:3001/ViewCategory", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "Get",
+                method: "POST",
+                body: JSON.stringify({user: username})
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -38,30 +39,30 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
         }
 
         //TEST CODE
-        let test_data: Array<CategoryInput> = [
-            { category: "test1", budget: 10, spent: 13 },
-            { category: "test2", budget: 12, spent: 11 },
-            { category: "test3", budget: 14, spent: 16 },
-            { category: "test4", budget: 15, spent: 14 },
-            { category: "test5", budget: 16, spent: 21 },
-        ];
-        let curr_data = [...data];
-        curr_data.splice(0);
-        for (let i = 0; i < test_data.length; i++) {
-            curr_data.push([test_data[i], test_data[i].category]);
-        }
-        setData(curr_data);
-        setLoaded(true);
+        // let test_data: Array<CategoryInput> = [
+        //     { category: "test1", budget: 10, spent: 13 },
+        //     { category: "test2", budget: 12, spent: 11 },
+        //     { category: "test3", budget: 14, spent: 16 },    
+        //     { category: "test4", budget: 15, spent: 14 },
+        //     { category: "test5", budget: 16, spent: 21 },
+        // ];
+        // let curr_data = [...data];
+        // curr_data.splice(0);
+        // for (let i = 0; i < test_data.length; i++) {
+        //     curr_data.push([test_data[i], test_data[i].category]);
+        // }
+        // setData(curr_data);
+        // setLoaded(true);
         //_____
     }
 
     async function submit() {
         try {
-            const response = await fetch("http://localhost:3001/checkUser", {
+            const response = await fetch("http://localhost:3001/updateBudget", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "POST",
-                body: JSON.stringify(data),
+                method: "PUT",
+                body: JSON.stringify({user: username, new: data}),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
