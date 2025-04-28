@@ -19,11 +19,11 @@ export const selected_button_color = "rgb(128, 191, 192)"
 
 const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserReceiptState): JSX.Element => {
     const [selected, setSelect] = useState(-1); //-1 No button selected; Any other number is index
-    const [userItems, setUserItems] = useState<number[][]>([[]]);
-    const [itemsUser, setItemsUser] = useState<number[]>([0]); 
-    const [userInputs, setUserInputs] = useState([username, ""]);
-    const [data, setData] = useState<Array<any>>([]); //Its an array like this [[CategoryInput, index],[CategoryInput, index]...];
-    // index = -1 for new categories and ordered 0->length-1 for existing ones
+    const [userItems, setUserItems] = useState<number[][]>([[]]); //user : items that they have //----
+    const [itemsUser, setItemsUser] = useState<number[]>([0]); //Amt of users per item //----
+    const [userInputs, setUserInputs] = useState([username, ""]); //----
+    const [data, setData] = useState<Array<any>>([]); //Its an array like this [CategoryInput]; diff from the one in viewCategories
+
     const [loaded, setLoaded] = useState(false);
     const [seller, setSeller] = useState("");
     const [submitStatus, setSubmitStatus] = useState(0); //0 is no err; 1 is no seller
@@ -44,20 +44,15 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
+            // { user: username, seller: seller, items: newItemInputs }
+            const json: any = await response.json();
+            setSeller(json.seller)
 
             //Response
-            const json = await response.json();
-            let curr_data = [...data];
-            curr_data.splice(0);
-            for (let i = 0; i < json.length; i++) {
-                curr_data.push([json[i], i]);
-            }
-            setData(curr_data);
-            setLoaded(true);
+            
         } catch (error) {
             console.error((error as Error).message);
         }
-        // { user: username, seller: seller, items: newItemInputs }
     }
     async function getCategories() {
         try {
@@ -75,10 +70,7 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
             const json: Array<CategoryInput> = await response.json();
             let curr_data = [...data];
             curr_data.splice(0);
-            for (let i = 0; i < json.length; i++) {
-                curr_data.push([json[i], i]);
-            }
-            setData(curr_data);
+            setData([...curr_data, ... json]);
             setLoaded(true);
         } catch (error) {
             console.error((error as Error).message);
@@ -94,10 +86,7 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
         ];
         let curr_data = [...data];
         curr_data.splice(0);
-        for (let i = 0; i < test_data.length; i++) {
-            curr_data.push([test_data[i], i]);
-        }
-        setData(curr_data);
+        setData([...curr_data, ... test_data]);
         setLoaded(true);
         //_____
 
@@ -130,18 +119,19 @@ const AddReceipt = ({ username, setUsername, receiptID, setReceiptID }: UserRece
                 name: curr.name,
                 price: curr.price,
                 amount: curr.amount,
+                category: curr.category,
                 contributes: newItemContributes[i],
             });
         }
 
-        const data = { user: username, seller: seller, items: newItemInputs };
-        console.log(data);
+        const data2 = { user: username, seller: seller, items: newItemInputs };
+        console.log(data2);
         try {
             const response = await fetch("http://localhost:3001/AddReceipt", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "PUT",
-                body: JSON.stringify(data),
+                body: JSON.stringify(data2),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
