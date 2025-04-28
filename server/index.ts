@@ -3,14 +3,20 @@ import bodyParser, { json } from "body-parser";
 import "./src/services/database";
 import {
     addAccount,
+    addBudget,
     addContributes,
     addItem,
     addReceipt,
+    changeCategoryName,
+    getAllBudgets,
+    getBudget,
     login,
+    updateBudget,
     verifyAccount,
 } from "./src/services/database";
-import { Contributes, Items, Receipts } from "./src/models/models";
+import { Budget, Contributes, Items, Receipts } from "./src/models/models";
 import pool from "./src/services/connections";
+import { Verify } from "node:crypto";
 const date = require("date");
 const cors = require("cors");
 
@@ -39,10 +45,13 @@ app.put("/login", (req, res) => {
     }).catch(() => {res.send("failed to create account");});
 });
 
+
+//RECEIPTS
 /*
 req = 
 {
     user: string,
+    seller: string,
     items:  [
                 {
                 name: string,
@@ -85,12 +94,10 @@ async function addAll(req: Request) {
         ReceiptID: 0,
         UserID: await verifyAccount(req.body["user"]),
         PurchaseDate: datetime,
-        Seller: "none",
+        Seller: req.body["seller"],
     };
 
     let new_receipt_id = await addReceipt(new_receipt);
-
-    console.log(new_receipt_id);
 
     for (let i = 0; i < req.body["items"].length; i++) {
         let x = req.body["items"][i];
@@ -98,7 +105,7 @@ async function addAll(req: Request) {
         let new_item: Items = {
             ItemId: 0,
             ItemName: x["name"],
-            Category: null,
+            Category: x["category"],
             ReceiptID: new_receipt_id,
             Price: x["price"],
         };
@@ -124,6 +131,7 @@ async function addAll(req: Request) {
 
 }
 
+
 app.put("/addReceipt", (req: Request, res: Response) => {
     // console.log(req.body["items"][0]);
     check_users(req).then((value) => {
@@ -137,30 +145,79 @@ app.put("/addReceipt", (req: Request, res: Response) => {
     }).catch(() => res.send("failed to add receipt"));
 });
 
+
+//CATEGORIES
+/*
+{
+    user: username
+}
+*/
+app.post("/ViewCategory", (req: Request, res: Response) => {
+    verifyAccount(req.body["user"]).then((uid: number) => { 
+        getAllBudgets(uid).then((budgets: Budget[]) => {
+            let data = [];
+
+            for (let i = 0; i < budgets.length; i++) {
+                let b = budgets[i];
+                data.push({category: b["Category"], budget: b["Budget"], spent: b["Spent"]});
+            }
+
+            res.send(data);
+        });
+    })
+});
+
+/*
+{
+    user: username,
+    new: [
+        {
+            category: string
+            budget: number
+            spent: number
+        },
+        old_name
+    ]
+}
+*/
+app.put("/updateBudget", (req: Request, res: Response) => {
+    verifyAccount(req.body["user"]).then((uid) => {
+        let data = req.body["new"];
+
+        console.log(data);
+        for (let i = 0; i < data.length; i++) {
+            let b = data[i];
+            let c = b[0];
+            let old = b[1];
+
+            let new_budget: Budget = {
+                Category: c["category"],
+                UserID: uid,
+                Budget: c["budget"],
+                Spent: c["spent"]
+            }
+            if (old == "") {
+                addBudget(new_budget);
+            } else {
+                changeCategoryName(c["category"], uid, old).then(() => {
+                    c["UserID"] = uid;
+                    updateBudget(new_budget);
+                });
+            }
+        }
+
+        res.send("Updated Budget");
+    });
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server running on localhost:${PORT}`);
 });
 
-/*
-req = 
-{
-    user: string,
-    items:  [
-                {
-                name: string,
-                price: num,
-                amount: num,
-                category: string,
-                contributes: [string]
-                }
-            ]
-}
-
-Example (Getting the first items name): req["items"][0]["name"]
-*/
-
 let req = {
     user: 1001,
+    seller: "",
     items: [{
                 name: "jake",
                 price: 10,

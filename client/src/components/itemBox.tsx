@@ -270,14 +270,14 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
                                             curr_inputs[index].category =
                                                 self.data[
                                                     cataIndex
-                                                ][0].category;
+                                                ].category;
                                         }
                                         setCataArr(curr_cataArr);
                                         setInputs(curr_inputs);
                                         console.log(cataArr);
                                     }}
                                 >
-                                    {category[0].category}
+                                    {category.category}
                                 </button>
                             ))}
                     </div>

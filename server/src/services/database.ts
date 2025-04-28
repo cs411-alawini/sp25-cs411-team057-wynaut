@@ -145,10 +145,16 @@ export async function getItem(itemID: number): Promise<Items> {
     return (rows as Items[])[0];
 }
 
-export async function getBudget(category:string, userID:number): Promise<Budget>{
-    const sqlQuery = `Select * From Budget Where Category = '${category}' and UserID = ${userID};`;
+export async function getAllBudgets(userID:number): Promise<Budget[]>{
+    const sqlQuery = `Select * From Budget Where UserID = ${userID};`;
     const [rows] = await pool.query(sqlQuery);
-    return (rows as Budget[])[0];
+    return rows as Budget[];
+}
+
+export async function getBudget(category: string, userID:number): Promise<Budget[]>{
+    const sqlQuery = `Select * From Budget Where UserID = ${userID} and Category = '${category}';`;
+    const [rows] = await pool.query(sqlQuery);
+    return rows as Budget[];
 }
 
 export async function getContributes(userID:number, itemID:number): Promise<Contributes>{
