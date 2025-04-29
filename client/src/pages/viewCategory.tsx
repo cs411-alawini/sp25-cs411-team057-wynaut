@@ -139,7 +139,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                             <div className="input-container" key={index}>
                                 <input
                                     className="general-outline"
-                                    value={categoryIn[0].category}
+                                    value={categoryIn[0].Category}
                                     onChange={(event) => {
                                         let curr_data = [...data];
                                         curr_data[index][0].category =
@@ -149,7 +149,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                 />
                                 <input
                                     className="general-outline"
-                                    value={categoryIn[0].budget}
+                                    value={categoryIn[0].Budget}
                                     onChange={(event) => {
                                         let curr_data = [...data];
                                         if (
@@ -166,7 +166,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                 />
                                 <input
                                     className="general-outline"
-                                    value={categoryIn[0].spent}
+                                    value={categoryIn[0].Spent}
                                     readOnly
                                 />
                                 <button
