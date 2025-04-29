@@ -54,6 +54,13 @@ export async function addAccount(
         return -1;
     }
 }
+
+export async function addIncome(userID:number, income:number):Promise<void>{
+    const sqlQuery = `Update Accounts Set Income=${income} Where UserID = ${userID};`;
+    await pool.query(sqlQuery);
+    return;
+}
+
 export async function addReceipt(
     receipt: Omit<Receipts, "ReceiptID">
 ): Promise<number> {
@@ -287,12 +294,13 @@ async function main() {
     //     console.log(results[0].Paid);
     //     console.log(results[0].UserId);
     // });
-    // await goodSpendingHabit(7).then((results) =>{
+    // await goodSpendingHabit(8).then((results) =>{
     //     console.log(results);
     // });
     // await verifyAccount("wynaut").then((results) =>{
     //     console.log(results);
     // })
+    //addIncome(1000, 10000);
 }
 
 main();
