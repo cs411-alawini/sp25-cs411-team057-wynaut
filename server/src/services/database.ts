@@ -54,6 +54,13 @@ export async function addAccount(
         return -1;
     }
 }
+
+export async function addIncome(userID:number, income:number):Promise<void>{
+    const sqlQuery = `Update Accounts Set Income=${income} Where UserID = ${userID};`;
+    await pool.query(sqlQuery);
+    return;
+}
+
 export async function addReceipt(
     receipt: Omit<Receipts, "ReceiptID">
 ): Promise<number> {
@@ -68,8 +75,8 @@ export async function addReceipt(
 export async function addItem(item: Omit<Items, "ItemId">): Promise<number> {
     let sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES ('${item.Category}', ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
 
-    if (item.Category == null) {
-        sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES (${item.Category}, ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
+    if (item.Category == '') {
+        sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES (${null}, ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
     }
 
     await pool.query(sqlQuery);
@@ -143,6 +150,11 @@ export async function updateContributes(contribute: Contributes): Promise<void> 
     return;
 }
 
+export async function getIncome(userID: number): Promise<number> {
+    const sqlQuery = `Select Income From Accounts Where UserID = ${userID};`;
+    const [rows] = await pool.query(sqlQuery);
+    return (rows as [{Income:number}])[0].Income;
+}
 export async function getReceipt(receiptID: number): Promise<Receipts> {
     const sqlQuery = `Select * From Receipts Where ReceiptID = ${receiptID};`;
     const [rows] = await pool.query(sqlQuery);
@@ -185,10 +197,11 @@ export async function getItemContributes(itemID:number): Promise<Contributes[]>{
     return rows as Contributes[];
 }
 
-export async function billSplit(receiptID: number): Promise<{UserId: number, Paid: number}>{
+export async function billSplit(receiptID: number): Promise<[{UserId: number, Paid: number}]>{
     const sqlQuery = `Call billSplit(${receiptID});`;
     const [rows] = await pool.query(sqlQuery);
-    return (rows as [{UserId: number, Paid: number}])[0];
+    // console.log(rows);
+    return (rows as [[{UserId: number, Paid: number}], any])[0];
 }
 
 export async function updateUserSpending(userID: number): Promise<void>{
@@ -196,10 +209,18 @@ export async function updateUserSpending(userID: number): Promise<void>{
     pool.query(sqlQuery);
 }
 
-export async function findOverspending(userID: number): Promise<{category: string, spent: number, budget: number}>{
+export async function findOverspending(userID: number): Promise<[{Category: string, TotalSpentInCategory: number, Budget: number}]>{
     const sqlQuery = `Call FindOverspending(${userID});`;
     const [rows] = await pool.query(sqlQuery);
-    return (rows as [{category: string, spent: number, budget: number}])[0];
+    return (rows as [[{Category: string, TotalSpentInCategory: number, Budget: number}], any])[0];
+}
+
+export async function goodSpendingHabit(userID:number): Promise<boolean>{
+    const sqlQuery = `Call goodSpendingHabit(${userID});`;
+    const[rows] = await pool.query(sqlQuery);
+    const user = ((rows as [{ UserID: number }])[0]) as { UserID: number };
+    if (Object.keys(user).length == 0) return false;
+    return true;
 }
 // Testing
 async function main() {
@@ -231,9 +252,6 @@ async function main() {
     // deleteReceipt(1000);
     // deleteItem(9901);
     // login({Username: "TestUser", Password: "12"}).then((results) => {
-    //     console.log(results);
-    // });
-    // billSplit(1021).then((results) =>{
     //     console.log(results);
     // });
     // updateUserSpending(1000);
@@ -270,10 +288,27 @@ async function main() {
     // getContributes(1000, 9408).then((results) =>{
     //     console.log(results);
     // });
-    // await findOverspending(1000).then((results) => {
+    // await findOverspending(7).then((results) => {
+    //     console.log(results);
+    //     console.log(results[0].Budget);
+    //     console.log(results[0].Category);
+    //     console.log(results[0].TotalSpentInCategory);
+    // });
+    // billSplit(1021).then((results) =>{
+    //     console.log(results);
+    //     console.log(results[0].Paid);
+    //     console.log(results[0].UserId);
+    // });
+    // await goodSpendingHabit(8).then((results) =>{
     //     console.log(results);
     // });
-
+    // await verifyAccount("wynaut").then((results) =>{
+    //     console.log(results);
+    // })
+    //addIncome(1000, 10000);
+    // getIncome(1000).then((results) => {
+    //     console.log(results);
+    // });
 }
 
 main();

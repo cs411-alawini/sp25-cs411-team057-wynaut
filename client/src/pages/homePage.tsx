@@ -99,7 +99,7 @@ const HomePage = ({
 
     async function checkGoodSpending() {
         try {
-            const response = await fetch("http://localhost:3001/goodspending", {
+            const response = await fetch("http://localhost:3001/goodSpendingHabit", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "POST",
@@ -201,6 +201,15 @@ const HomePage = ({
                     >
                         {" "}
                         Your spending is under the US average expense!{" "}
+                    </text>
+                )}
+                {!underAvg && (
+                    <text
+                        className="general-outline"
+                        style={{ margin: 30, color: "red" }}
+                    >
+                        {" "}
+                        Your spending is over the US average expense!{" "}
                     </text>
                 )}
             </div>

@@ -22,12 +22,12 @@ const UserBox = (self: UserInput): JSX.Element => {
         }
 
         try {
-            const response = await fetch("http://localhost:3001/checkUser", {
+            const response = await fetch("http://localhost:3001/CheckUser", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "POST",
                 body: JSON.stringify(
-                    self.userInputs[self.userInputs.length - 1]
+                    {username: self.userInputs[self.userInputs.length - 1]}
                 ), //Last name in inputs array
             });
             if (!response.ok) {

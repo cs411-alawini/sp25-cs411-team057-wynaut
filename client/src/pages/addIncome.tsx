@@ -16,7 +16,7 @@ const AddIncome = ({ username }: UsernameInput): JSX.Element => {
 
     async function loadIncome() {
         try {
-            const response = await fetch("http://localhost:3001/loadIncome", {
+            const response = await fetch("http://localhost:3001/getIncome", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "POST",
@@ -37,10 +37,10 @@ const AddIncome = ({ username }: UsernameInput): JSX.Element => {
 
     async function submitIncome() {
         try {
-            const response = await fetch("http://localhost:3001/submitIncome", {
+            const response = await fetch("http://localhost:3001/addIncome", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "POST",
+                method: "PUT",
                 body: JSON.stringify({ username: username, income: income }),
             });
             if (!response.ok) {

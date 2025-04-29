@@ -280,13 +280,15 @@ const AddReceipt = ({
             const json = await response.json();
             setBillSplit([...billSplit, ...json.billsplit]);
             setOverspend([...overspend, ...json.overspend]);
+            console.log(json.billsplit);
+            console.log(json.overspend);
             setDisplayStatus(1);
             // find total cost to users here
         } catch (error) {
             console.error((error as Error).message);
         }
 
-        //TEST
+        // TEST
         // const json = {
         //     billsplit: [{ user: "test", amount: 10 }],
         //     overspend: [
@@ -297,7 +299,7 @@ const AddReceipt = ({
         // setBillSplit([...billSplit, ...json.billsplit]);
         // setOverspend([...overspend, ...json.overspend]);
         // setDisplayStatus(1);
-        //-------
+        // -------
     }
 
     useEffect(() => {
