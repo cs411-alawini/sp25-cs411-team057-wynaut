@@ -7,7 +7,9 @@ import {
     addContributes,
     addItem,
     addReceipt,
+    billSplit,
     changeCategoryName,
+    findOverspending,
     getAllBudgets,
     getAllReceipts,
     getBudget,
@@ -134,15 +136,44 @@ async function addAll(req: Request) {
         }
     }
 
+    return new_receipt_id;
 }
 
+
+/*
+{
+    billsplit: [
+        {
+            UserID: string,
+            Spent: number
+        }
+    ],
+
+    overspend: [
+        {
+            Category: string,
+            Spent: number,
+            Budget: number
+        }
+    ]
+}
+*/
 
 app.put("/addReceipt", (req: Request, res: Response) => {
     // console.log(req.body["items"][0]);
     check_users(req).then((value) => {
         if (value == '') {
-            addAll(req);
-            res.send("added receipt");
+            addAll(req).then((receiptID) => {
+                billSplit(receiptID).then((split) => {
+                    verifyAccount(req.body["user"]).then((uid) => {
+                        findOverspending(uid).then((over) => {
+                            console.log(split);
+                            console.log(over);
+                            res.send(JSON.stringify({billsplit: split, overspend: over}));
+                        })
+                    });
+                })
+            });
         } else {
             res.send("invalid users");
         }
@@ -230,7 +261,6 @@ app.post("/ViewReceipt", (req: Request, res: Response) => {
     });
 });
 
-
 //CATEGORIES
 /*
 {
@@ -299,28 +329,28 @@ app.listen(PORT, () => {
     console.log(`Server running on localhost:${PORT}`);
 });
 
-// let req = {
-//     user: 1001,
-//     seller: "",
-//     items: [{
-//                 name: "jake",
-//                 price: 10,
-//                 amount: 2,
-//                 category: "people",
-//                 contributes: ["CJ", "Kevin", "Wenhao", "David"]
-//             }
-//             ,
-//             {
-//                 name: "jake2",
-//                 price: 5,
-//                 amount: 1,
-//                 category: "people",
-//                 contributes: ["CJ", "David"]
-//             },]
-// }
+let req = {
+    user: "david",
+    seller: "",
+    items: [{
+                name: "jake",
+                price: 10,
+                amount: 1,
+                category: "people",
+                contributes: ["CJ", "Kevin", "Wenhao", "David"]
+            }
+            ,
+            {
+                name: "jake2",
+                price: 5,
+                amount: 1,
+                category: "people",
+                contributes: ["CJ", "David"]
+            },]
+}
 
-// fetch("http://localhost:3003/GetReceipt", {
-//     headers: { "Content-type": "application/json" },
-//     method: "POST",
-//     body: JSON.stringify({receipt: 5}),
-// }).then(() => console.log("wtf"));
+fetch("http://localhost:3001/AddReceipt", {
+    headers: { "Content-type": "application/json" },
+    method: "PUT",
+    body: JSON.stringify(req),
+}).then(() => console.log("wtf"));
