@@ -353,10 +353,13 @@ app.put("/updateBudget", (req: Request, res: Response) => {
                 Budget: c["Budget"],
                 Spent: c["Spent"]
             }
+ 
+            console.log(c);
+            console.log(old);
             if (old == "") {
                 addBudget(new_budget);
             } else {
-                changeCategoryName(c["Category"], uid, old).then(() => {
+                changeCategoryName(old, uid, c["Category"]).then(() => {
                     c["UserID"] = uid;
                     updateBudget(new_budget);
                 });
@@ -368,7 +371,7 @@ app.put("/updateBudget", (req: Request, res: Response) => {
 });
 
 app.post("/removeCategory", (req, res) => {
-    verifyAccount(req.body["username"]).then((uid) => {
+    verifyAccount(req.body["user"]).then((uid) => {
         deleteBudget(req.body["Category"], uid).then(() => res.send("deleted category"));
     })
 });
