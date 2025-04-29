@@ -65,6 +65,8 @@ const ViewReceipt = ({
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
             }
+            getOldReceipt();
+
         } catch (error) {
             console.error((error as Error).message);
         }
