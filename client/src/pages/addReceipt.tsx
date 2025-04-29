@@ -277,21 +277,11 @@ const AddReceipt = ({
                 throw new Error(`Response status: ${response.status}`);
             }
 
-            // const json = await response.json();
-            // setBillSplit([...billSplit, ...json.billsplit]);
-            // setOverspend([...overspend, ...json.overspend]);
-            // console.log(json.billsplit);
-            // console.log(json.overspend);
-
-            const json = {
-                billsplit: [{ user: "test", amount: 10 }],
-                overspend: [
-                    { category: "test1", budget: 10, spent: 13 },
-                    { category: "test2", budget: 12, spent: 11 },
-                ],
-            };
+            const json = await response.json();
             setBillSplit([...billSplit, ...json.billsplit]);
             setOverspend([...overspend, ...json.overspend]);
+            console.log(json.billsplit);
+            console.log(json.overspend);
             setDisplayStatus(1);
             // find total cost to users here
         } catch (error) {
@@ -411,8 +401,8 @@ const AddReceipt = ({
                     </div>
                     {billSplit.map((user, index) => (
                         <div className="container2">
-                            <input className="general-outline" value={user.user} readOnly />
-                            <input className="general-outline" value={user.amount} readOnly />
+                            <input className="general-outline" value={user.Username} readOnly />
+                            <input className="general-outline" value={user.Spent} readOnly />
                         </div>
                     ))}
 
@@ -446,17 +436,17 @@ const AddReceipt = ({
                                 <div className="container2">
                                     <input
                                         className="general-outline"
-                                        value={cata.category}
+                                        value={cata.Category}
                                         readOnly
                                     />
                                     <input
                                         className="general-outline"
-                                        value={cata.budget}
+                                        value={cata.Budget}
                                         readOnly
                                     />
                                     <input
                                         className="general-outline"
-                                        value={cata.spent}
+                                        value={cata.Spent}
                                         readOnly
                                     />
                                 </div>

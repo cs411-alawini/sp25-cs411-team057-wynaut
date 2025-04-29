@@ -22,9 +22,9 @@ export interface ItemInput {
 }
 
 export interface CategoryInput {
-    category: string;
-    budget: number;
-    spent: number;
+    Category: string;
+    Budget: number;
+    Spent: number;
 }
 
 export interface UserInput {
@@ -61,6 +61,6 @@ export interface Receipt {
 }
 
 export interface BillSplit{
-    user:string, 
-    amount:number
+    Username:string, 
+    Spent:number
 }
