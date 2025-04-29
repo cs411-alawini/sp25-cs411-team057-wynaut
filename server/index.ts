@@ -5,6 +5,7 @@ import {
     addAccount,
     addBudget,
     addContributes,
+    addIncome,
     addItem,
     addReceipt,
     billSplit,
@@ -312,6 +313,9 @@ app.post("/goodSpendingHabit", (req, res) => {
     })
 })
 
+app.put("/addIncome", (req,res) => {
+    addIncome(req.body["Username"], req.body["Income"]).then(() => res.send("accepted"));
+})
 /*
 {
     user: username,
