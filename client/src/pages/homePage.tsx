@@ -1,5 +1,5 @@
 import { log } from "console";
-import React, { useState, JSX } from "react";
+import React, { useState, JSX, useEffect } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { UserReceiptState, CategoryInput } from "../components/interfaces";
 import { json } from "stream/consumers";
@@ -115,6 +115,10 @@ const HomePage = ({
         }
     }
 
+    useEffect(() => {
+        checkGoodSpending();
+    }, []); // Empty dependency array ensures the effect runs only once on mount
+
     //RETURN ---------------------------------------------------------------------------------------------------------------------------
     if (username == "" && loginStatus != 2) {
         //No userID set and hasn't logged in yet
@@ -188,9 +192,7 @@ const HomePage = ({
                     </button>
                 </Link>
                 <Link to="/AddIncome">
-                    <button className="input-button">
-                        Add Annual Income
-                    </button>
+                    <button className="input-button">Add Annual Income</button>
                 </Link>
                 {underAvg && (
                     <text
