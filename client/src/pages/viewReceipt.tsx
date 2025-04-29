@@ -54,23 +54,23 @@ const ViewReceipt = ({
         // setLoaded(true);
     }
 
-    async function deleteReceipt(curr_receiptID : number) {
-        try {
-            const response = await fetch("http://localhost:3001/deleteReceipt", {
-                //CHANGE ENDPOINT HERE
-                headers: { "Content-type": "application/json" },
-                method: "PUT",
-                body: JSON.stringify({ receiptID: curr_receiptID }),
-            });
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-            getOldReceipt();
+    // async function deleteReceipt(curr_receiptID : number) {
+    //     try {
+    //         const response = await fetch("http://localhost:3001/deleteReceipt", {
+    //             //CHANGE ENDPOINT HERE
+    //             headers: { "Content-type": "application/json" },
+    //             method: "PUT",
+    //             body: JSON.stringify({ receiptID: curr_receiptID }),
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error(`Response status: ${response.status}`);
+    //         }
+    //         getOldReceipt();
 
-        } catch (error) {
-            console.error((error as Error).message);
-        }
-    }
+    //     } catch (error) {
+    //         console.error((error as Error).message);
+    //     }
+    // }
 
     useEffect(() => {
         getOldReceipt();
@@ -137,14 +137,14 @@ const ViewReceipt = ({
                                         View
                                     </button>
                                 </Link>
-                                <button
+                                {/* <button
                                         className="input-button"
                                         onClick={() => {
                                             deleteReceipt(receipt.ReceiptID);
                                         }}
                                     >   
                                         Delete
-                                </button>
+                                </button> */}
                             </div>
                         ))}
                     </div>

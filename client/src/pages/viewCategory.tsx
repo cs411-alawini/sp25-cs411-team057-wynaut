@@ -69,6 +69,23 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
             console.error((error as Error).message);
         }
     }
+    async function deleteCata(cataName : string) {
+        try {
+            const response = await fetch("http://localhost:3001/deleteCata", {
+                //CHANGE ENDPOINT HERE
+                headers: { "Content-type": "application/json" },
+                method: "PUT",
+                body: JSON.stringify({user: username, Catagory: cataName}),
+            });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            let res = JSON.parse(await response.json());
+        } catch (error) {
+            console.error((error as Error).message);
+        }
+    }
 
     useEffect(() => {
         getCategories();
@@ -176,6 +193,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                             curr_data.splice(index, 1);
                                             setData([...curr_data]);
                                         }
+                                        deleteCata(categoryIn[0].Category)
                                     }}
                                 >
                                     Delete
