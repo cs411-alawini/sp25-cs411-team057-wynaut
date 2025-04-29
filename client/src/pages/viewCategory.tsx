@@ -71,11 +71,11 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
     }
     async function deleteCata(cataName : string) {
         try {
-            const response = await fetch("http://localhost:3001/deleteCata", {
+            const response = await fetch("http://localhost:3001/removeCategory", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
-                method: "PUT",
-                body: JSON.stringify({user: username, Catagory: cataName}),
+                method: "POST",
+                body: JSON.stringify({user: username, Category: cataName}),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
