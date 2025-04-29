@@ -150,7 +150,7 @@ async function addAll(req: Request) {
 {
     billsplit: [
         {
-            UserID: string,
+            Username: string,
             Spent: number
         }
     ],
@@ -165,30 +165,29 @@ async function addAll(req: Request) {
 }
 */
 
-app.put("/addReceipt", (req: Request, res: Response) => {
-    // console.log(req.body["items"][0]);
-    check_users(req).then((value) => {
-        if (value == '') {
-            addAll(req).then((receiptID) => {
-                // console.log("addAll")
-                billSplit(receiptID).then((split: any) => {
-                    // console.log("billsplit");
-                    verifyAccount(req.body["user"]).then((uid) => {
-                        getUsername(uid).then((username) => {
-                            findOverspending(uid).then((over: any) => {
-                                console.log(split);
-                                console.log(over);
-                                res.send(JSON.stringify({billsplit: split, overspend: over}));
-                            })
-                        });
-                    });
-                })
-            });
-        } else {
-            res.send("invalid users");
-        }
+async function getResults(req: any)
+ {
+    let receipt_id = await addAll(req);
+    let uid = await verifyAccount(req.body["user"]);
+    let split = await billSplit(receipt_id);
+    let over = await findOverspending(uid);
 
-    }).catch(() => res.send("failed to add receipt"));
+    let new_split = [];
+
+    for (let i = 0; i < split.length; i++) {
+        let s = split[i];
+        console.log(s["UserID"]);
+        console.log(s["Spent"]);
+        new_split.push({Username: await getUsername(s["UserID"]), Spent: s["Spent"]});
+    }
+
+    console.log(new_split);
+    console.log(over);
+
+    return JSON.stringify({billsplit: new_split, overspend: over});
+ }
+app.put("/addReceipt", (req: Request, res: Response) => {
+    getResults(req).then((val) => res.send(val));
 });
 
 async function obtainReceipt(receiptID: number) {
