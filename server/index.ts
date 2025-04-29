@@ -294,7 +294,7 @@ app.post("/ViewCategory", (req: Request, res: Response) => {
 
             for (let i = 0; i < budgets.length; i++) {
                 let b = budgets[i];
-                data.push({category: b["Category"], budget: b["Budget"], spent: b["Spent"]});
+                data.push({Category: b["Category"], Budget: b["Budget"], Spent: b["Spent"]});
             }
 
             res.send(data);
