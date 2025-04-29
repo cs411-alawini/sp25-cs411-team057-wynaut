@@ -31,6 +31,8 @@ const AddIncome = ({ username }: UsernameInput): JSX.Element => {
         } catch (error) {
             console.error((error as Error).message);
         }
+        setLoaded(true);
+
     }
 
     async function submitIncome() {
@@ -69,7 +71,7 @@ const AddIncome = ({ username }: UsernameInput): JSX.Element => {
 
             {!loaded && <text> Loading... </text>}
             {loaded && (
-                <div className="general-outline">
+                <div className="general-outline" style={{margin: 10}}>
                     <button className="general-outline" style={{ margin: 10 }} onClick={submitIncome}>
                         Submit
                     </button>

@@ -9,7 +9,7 @@ import ViewCategory from "./pages/viewCategory";
 import AddIncome from "./pages/addIncome";
 
 const App: React.FC = () => {
-    const [username, setUsername] = useState("Test");
+    const [username, setUsername] = useState("");
     const [receiptID, setReceiptID] = useState(-1);
 
     return (

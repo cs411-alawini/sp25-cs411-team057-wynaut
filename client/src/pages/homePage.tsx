@@ -10,7 +10,7 @@ const HomePage = ({
     setReceiptID,
 }: UserReceiptState): JSX.Element => {
     const [loginInfo, setInfo] = useState({ username: "", password: "" });
-    const [loginStatus, setLogin] = useState(2); //-1 = failed to login 0 = not login yet 1 = in process 2 = logged in
+    const [loginStatus, setLogin] = useState(0); //-1 = failed to login 0 = not login yet 1 = in process 2 = logged in
     const [createStatus, setCreate] = useState(0); //-1 = failed to create 0 = not created yet 1 = in process 2 = created
     const [underAvg, setAvg] = useState(false);
     const buttonTextLogin = () => {
