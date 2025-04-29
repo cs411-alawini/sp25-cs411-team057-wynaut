@@ -107,6 +107,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                         },
                                         "",
                                     ]);
+                                    console.log(curr_data)
                                     setData([...curr_data]);
                                 }}
                             >
