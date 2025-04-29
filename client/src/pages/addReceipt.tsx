@@ -277,18 +277,28 @@ const AddReceipt = ({
                 throw new Error(`Response status: ${response.status}`);
             }
 
-            const json = await response.json();
+            // const json = await response.json();
+            // setBillSplit([...billSplit, ...json.billsplit]);
+            // setOverspend([...overspend, ...json.overspend]);
+            // console.log(json.billsplit);
+            // console.log(json.overspend);
+
+            const json = {
+                billsplit: [{ user: "test", amount: 10 }],
+                overspend: [
+                    { category: "test1", budget: 10, spent: 13 },
+                    { category: "test2", budget: 12, spent: 11 },
+                ],
+            };
             setBillSplit([...billSplit, ...json.billsplit]);
             setOverspend([...overspend, ...json.overspend]);
-            console.log(json.billsplit);
-            console.log(json.overspend);
             setDisplayStatus(1);
             // find total cost to users here
         } catch (error) {
             console.error((error as Error).message);
         }
 
-        //TEST
+        // TEST
         // const json = {
         //     billsplit: [{ user: "test", amount: 10 }],
         //     overspend: [
@@ -299,7 +309,7 @@ const AddReceipt = ({
         // setBillSplit([...billSplit, ...json.billsplit]);
         // setOverspend([...overspend, ...json.overspend]);
         // setDisplayStatus(1);
-        //-------
+        // -------
     }
 
     useEffect(() => {
