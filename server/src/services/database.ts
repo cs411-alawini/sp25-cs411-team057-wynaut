@@ -197,10 +197,10 @@ export async function updateUserSpending(userID: number): Promise<void>{
     pool.query(sqlQuery);
 }
 
-export async function findOverspending(userID: number): Promise<{Category: string, Spent: number, Budget: number}>{
+export async function findOverspending(userID: number): Promise<[{Category: string, Spent: number, Budget: number}]>{
     const sqlQuery = `Call FindOverspending(${userID});`;
     const [rows] = await pool.query(sqlQuery);
-    return (rows as [[{Category: string, Spent: number, Budget: number}], any])[0][0];
+    return (rows as [[{Category: string, Spent: number, Budget: number}], any])[0];
 }
 
 export async function goodSpendingHabit(userID:number): Promise<boolean>{
