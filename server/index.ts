@@ -17,6 +17,7 @@ import {
     getReceipt,
     getReceiptItems,
     getUsername,
+    goodSpendingHabit,
     login,
     updateBudget,
     verifyAccount,
@@ -173,18 +174,22 @@ async function getResults(req: any)
     let over = await findOverspending(uid);
 
     let new_split = [];
+    let new_over = [];
 
     for (let i = 0; i < split.length; i++) {
         let s = split[i];
-        console.log(s["UserID"]);
-        console.log(s["Spent"]);
-        new_split.push({Username: await getUsername(s["UserID"]), Spent: s["Spent"]});
+        new_split.push({Username: await getUsername(s.UserId), Spent: s.Paid});
+    }
+
+    for (let i = 0; i < over.length; i++) {
+        let s = over[i];
+        new_over.push({Category: s.Category, Spent: s.TotalSpentInCategory, Budget: s.Budget});
     }
 
     console.log(new_split);
-    console.log(over);
+    console.log(new_over);
 
-    return JSON.stringify({billsplit: new_split, overspend: over});
+    return JSON.stringify({billsplit: new_split, overspend: new_over});
  }
 app.put("/addReceipt", (req: Request, res: Response) => {
     getResults(req).then((val) => res.send(val));
@@ -265,7 +270,15 @@ app.post("/GetReceipt", (req: Request, res: Response) => {
 app.post("/ViewReceipt", (req: Request, res: Response) => {
     verifyAccount(req.body["user"]).then((uid) => {
         getAllReceipts(uid).then((receipts: Receipts[]) => {
-            res.send(receipts);
+            let new_receipts = []
+
+            for (let i = 0; i < receipts.length; i++) {
+                let r : Receipts = receipts[i];
+                let date = r.PurchaseDate.toString();
+                let idx = date.search(":");
+                new_receipts.push({ReceiptID: r.ReceiptID, PurchaseDate: r.PurchaseDate.toString().substring(0,idx - 3), Seller: r.Seller});
+            }
+            res.send(JSON.stringify(new_receipts));
         });
     });
 });
@@ -290,6 +303,14 @@ app.post("/ViewCategory", (req: Request, res: Response) => {
         });
     })
 });
+
+app.post("/goodSpendingHabit", (req, res) => {
+    verifyAccount(req.body["Username"]).then((uid) => {
+        goodSpendingHabit(uid).then((val) => {
+            res.send(val);
+        })
+    })
+})
 
 /*
 {
