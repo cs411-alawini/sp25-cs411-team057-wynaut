@@ -54,6 +54,24 @@ const ViewReceipt = ({
         // setLoaded(true);
     }
 
+    // async function deleteReceipt(curr_receiptID : number) {
+    //     try {
+    //         const response = await fetch("http://localhost:3001/deleteReceipt", {
+    //             //CHANGE ENDPOINT HERE
+    //             headers: { "Content-type": "application/json" },
+    //             method: "PUT",
+    //             body: JSON.stringify({ receiptID: curr_receiptID }),
+    //         });
+    //         if (!response.ok) {
+    //             throw new Error(`Response status: ${response.status}`);
+    //         }
+    //         getOldReceipt();
+
+    //     } catch (error) {
+    //         console.error((error as Error).message);
+    //     }
+    // }
+
     useEffect(() => {
         getOldReceipt();
     }, []); // Empty dependency array ensures the effect runs only once on mount
@@ -119,6 +137,14 @@ const ViewReceipt = ({
                                         View
                                     </button>
                                 </Link>
+                                {/* <button
+                                        className="input-button"
+                                        onClick={() => {
+                                            deleteReceipt(receipt.ReceiptID);
+                                        }}
+                                    >   
+                                        Delete
+                                </button> */}
                             </div>
                         ))}
                     </div>

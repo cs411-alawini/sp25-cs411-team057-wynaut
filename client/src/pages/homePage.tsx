@@ -76,6 +76,8 @@ const HomePage = ({
         }
     }
 
+    
+
     async function tryCreate() {
         setLogin(0);
         setCreate(1);
@@ -115,10 +117,6 @@ const HomePage = ({
             console.error((error as Error).message);
         }
     }
-
-    useEffect(() => {
-        checkGoodSpending();
-    }, []); // Empty dependency array ensures the effect runs only once on mount
 
     //RETURN ---------------------------------------------------------------------------------------------------------------------------
     if (username == "" && loginStatus != 2) {
