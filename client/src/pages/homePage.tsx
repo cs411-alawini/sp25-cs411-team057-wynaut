@@ -203,6 +203,15 @@ const HomePage = ({
                         Your spending is under the US average expense!{" "}
                     </text>
                 )}
+                {!underAvg && (
+                    <text
+                        className="general-outline"
+                        style={{ margin: 30, color: "red" }}
+                    >
+                        {" "}
+                        Your spending is over the US average expense!{" "}
+                    </text>
+                )}
             </div>
         );
     }
