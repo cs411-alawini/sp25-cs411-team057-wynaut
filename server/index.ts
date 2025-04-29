@@ -171,24 +171,14 @@ app.put("/addReceipt", (req: Request, res: Response) => {
         if (value == '') {
             addAll(req).then((receiptID) => {
                 // console.log("addAll")
-                billSplit(receiptID).then((split) => {
+                billSplit(receiptID).then((split: any) => {
                     // console.log("billsplit");
                     verifyAccount(req.body["user"]).then((uid) => {
                         getUsername(uid).then((username) => {
-                            findOverspending(uid).then((over) => {
-                                // console.log("over");
-                                let new_bill = {
-                                    Username: split["UserId"],
-                                    Spent: split["Paid"]
-                                }
-                                let new_over = {
-                                    Category: over["category"],
-                                    Spent: over["spent"],
-                                    Budget: over["budget"]
-                                }
-                                console.log(new_bill);
-                                console.log(new_over);
-                                res.send(JSON.stringify({billsplit: new_bill, overspend: new_over}));
+                            findOverspending(uid).then((over: any) => {
+                                console.log(split);
+                                console.log(over);
+                                res.send(JSON.stringify({billsplit: split, overspend: over}));
                             })
                         });
                     });
