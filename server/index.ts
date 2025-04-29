@@ -14,6 +14,7 @@ import {
     getAllBudgets,
     getAllReceipts,
     getBudget,
+    getIncome,
     getItemContributes,
     getReceipt,
     getReceiptItems,
@@ -311,11 +312,25 @@ app.post("/goodSpendingHabit", (req, res) => {
             res.send(val);
         })
     })
-})
+});
 
 app.put("/addIncome", (req,res) => {
-    addIncome(req.body["Username"], req.body["Income"]).then(() => res.send("accepted"));
-})
+    verifyAccount(req.body["username"]).then((uid) => {
+        addIncome(uid, req.body["income"]).then(() => res.send("accepted"));
+    });
+});
+
+app.post("/getIncome", (req, res) => {
+    verifyAccount(req.body["username"]).then((uid) => {
+        getIncome(uid).then((val) => {
+            if (val == null) {
+                res.send(0);
+            } else {
+                res.send(val);
+            }
+        });
+    });
+});
 /*
 {
     user: username,
