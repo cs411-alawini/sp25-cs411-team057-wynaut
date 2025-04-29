@@ -39,19 +39,19 @@ const ViewReceipt = ({
             console.error((error as Error).message);
         }
 
-        let test_data: Array<Receipt> = [
-            { ReceiptID: 1, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
-            { ReceiptID: 2, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
-            { ReceiptID: 3, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
-            { ReceiptID: 4, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
-            { ReceiptID: 5, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
-            { ReceiptID: 6, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
-            { ReceiptID: 7, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
-        ];
-        let curr_Receipts = [...oldReceipts];
-        curr_Receipts.splice(0);
-        setOldReceipts([...curr_Receipts, ...test_data]);
-        setLoaded(true);
+        // let test_data: Array<Receipt> = [
+        //     { ReceiptID: 1, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+        //     { ReceiptID: 2, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+        //     { ReceiptID: 3, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+        //     { ReceiptID: 4, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+        //     { ReceiptID: 5, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+        //     { ReceiptID: 6, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+        //     { ReceiptID: 7, UserID: 1, PurchaseDate: "Date", Seller: "Seller" },
+        // ];
+        // let curr_Receipts = [...oldReceipts];
+        // curr_Receipts.splice(0);
+        // setOldReceipts([...curr_Receipts, ...test_data]);
+        // setLoaded(true);
     }
 
     useEffect(() => {
