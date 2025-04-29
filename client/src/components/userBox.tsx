@@ -35,18 +35,21 @@ const UserBox = (self: UserInput): JSX.Element => {
             }
 
             let res = JSON.parse(await response.json());
+            if (res > 0){
+                let curr_input = [...self.userInputs];
+                curr_input.push("");
+                self.setUserInputs(curr_input);
+        
+                let curr_userItems = [...self.userItems];
+                curr_userItems.push([]);
+                self.setUserItems(curr_userItems);
+            }
         } catch (error) {
             console.error((error as Error).message);
         }
 
         // CHANGE STATUS
-        let curr_input = [...self.userInputs];
-        curr_input.push("");
-        self.setUserInputs(curr_input);
 
-        let curr_userItems = [...self.userItems];
-        curr_userItems.push([]);
-        self.setUserItems(curr_userItems);
 
     }
 
