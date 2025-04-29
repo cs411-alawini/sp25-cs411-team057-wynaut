@@ -68,8 +68,8 @@ export async function addReceipt(
 export async function addItem(item: Omit<Items, "ItemId">): Promise<number> {
     let sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES ('${item.Category}', ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
 
-    if (item.Category == null) {
-        sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES (${item.Category}, ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
+    if (item.Category == '') {
+        sqlQuery = `Insert Into Items(Category, ReceiptID, ItemName, Price) VALUES (${null}, ${item.ReceiptID}, '${item.ItemName}', ${item.Price});`;
     }
 
     await pool.query(sqlQuery);

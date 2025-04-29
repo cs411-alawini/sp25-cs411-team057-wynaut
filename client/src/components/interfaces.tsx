@@ -56,7 +56,11 @@ export interface ItemBoxInputs {
 
 export interface Receipt {
     ReceiptID: number,
-    UserID: number,
     PurchaseDate: string,
     Seller: string
+}
+
+export interface BillSplit{
+    user:string, 
+    amount:number
 }

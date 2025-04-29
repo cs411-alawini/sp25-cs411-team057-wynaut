@@ -88,6 +88,12 @@ async function check_users(req: any): Promise<string> {
     return '';
 }
 
+app.post("/CheckUser", (req, res) => {
+    verifyAccount(req.body["username"]).then((value) => {
+        res.send(value);
+    })
+})
+
 async function addAll(req: Request) {
     let currentdate = new Date();
     let datetime =
@@ -121,7 +127,7 @@ async function addAll(req: Request) {
             let new_item_id = await addItem(new_item);
 
             // console.log(new_item_id);
-            let new_percent = 100 / x["contributes"].length;
+            let new_percent = 1 / x["contributes"].length;
 
             for (let k = 0; k < x["contributes"].length; k++) {
 
@@ -164,11 +170,15 @@ app.put("/addReceipt", (req: Request, res: Response) => {
     check_users(req).then((value) => {
         if (value == '') {
             addAll(req).then((receiptID) => {
+                console.log("addAll")
                 billSplit(receiptID).then((split) => {
+                    console.log("billsplit");
                     verifyAccount(req.body["user"]).then((uid) => {
+                        console.log("verify");
                         findOverspending(uid).then((over) => {
-                            console.log(split);
-                            console.log(over);
+                            console.log("over");
+                            // console.log(split);
+                            // console.log(over);
                             res.send(JSON.stringify({billsplit: split, overspend: over}));
                         })
                     });
@@ -349,8 +359,8 @@ let req = {
             },]
 }
 
-fetch("http://localhost:3001/AddReceipt", {
-    headers: { "Content-type": "application/json" },
-    method: "PUT",
-    body: JSON.stringify(req),
-}).then(() => console.log("wtf"));
+// fetch("http://localhost:3001/AddReceipt", {
+//     headers: { "Content-type": "application/json" },
+//     method: "PUT",
+//     body: JSON.stringify(req),
+// }).then(() => console.log("wtf"));

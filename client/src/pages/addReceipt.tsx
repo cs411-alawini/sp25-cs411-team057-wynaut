@@ -13,6 +13,7 @@ import {
     ItemInput,
     UserInput,
     CategoryInput,
+    BillSplit,
 } from "../components/interfaces";
 
 export const selected_button_color = "rgb(128, 191, 192)";
@@ -36,14 +37,18 @@ const AddReceipt = ({
     const [seller, setSeller] = useState(""); //----
     const [submitStatus, setSubmitStatus] = useState(0); //0 is no err; 1 is no seller
 
+    const [displayStatus, setDisplayStatus] = useState(0);
+    const [billSplit, setBillSplit] = useState<Array<BillSplit>>([]);
+    const [overspend, setOverspend] = useState<Array<CategoryInput>>([]);
+
     async function loadReceipt() {
-        console.log("LOADING RECEIPT")
+        console.log("LOADING RECEIPT");
         try {
             const response = await fetch("http://localhost:3001/GetReceipt", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "Post",
-                body: JSON.stringify({receipt: receiptID}),
+                body: JSON.stringify({ receipt: receiptID }),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -58,15 +63,15 @@ const AddReceipt = ({
             new_itemsUser.splice(0);
             let new_inputs = [...inputs];
             new_inputs.splice(0);
-    
+
             for (let i = 0; i < json.items.length; i++) {
                 //get all items
                 let curr_item = json.items[i];
-    
+
                 for (let j = 0; j < curr_item.contributes.length; j++) {
                     // get all users for each item
                     let curr_user = curr_item.contributes[j];
-    
+
                     if (!(curr_user in userItemdict)) {
                         userItemdict[curr_user] = [];
                     }
@@ -84,16 +89,16 @@ const AddReceipt = ({
             setInputs(new_inputs);
             user_set.delete(username);
             setItemsUser(new_itemsUser);
-    
+
             let new_userItems = [...userItems];
             let new_userInputs = [...userInputs];
-            new_userInputs.splice(1)
+            new_userInputs.splice(1);
             user_set.forEach((element) => {
                 new_userItems.push([]);
                 new_userInputs.push(element);
             });
             setUserInputs([...new_userInputs, ""]);
-    
+
             console.log(userItemdict);
             for (let i = 0; i < new_userInputs.length; i++) {
                 new_userItems[i] = userItemdict[new_userInputs[i]];
@@ -193,7 +198,7 @@ const AddReceipt = ({
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "POST",
-                body: JSON.stringify({user: username})
+                body: JSON.stringify({ user: username }),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -218,15 +223,10 @@ const AddReceipt = ({
         //     { category: "test5", budget: 16, spent: 21 },
         // ];
         // let curr_data = [...data];
-        // curr_data.splice(0);
-        // for (let i = 0; i < test_data.length; i++) {
-        //     curr_data.push([test_data[i], i]);
-        // }
-        // setData(curr_data);
-        // setLoaded(true);
-        // //_____
-
-        // console.log("HERE");
+        //     curr_data.splice(0);
+        //     setData([...curr_data, ...test_data]);
+        //     setLoaded(true);
+        //_____
     }
 
     async function submitReceipt(inputs: ItemInput[]) {
@@ -260,7 +260,12 @@ const AddReceipt = ({
             });
         }
 
-        const data2 = { user: username, seller: seller, receiptID: receiptID, items: newItemInputs };
+        const data2 = {
+            user: username,
+            seller: seller,
+            receiptID: receiptID,
+            items: newItemInputs,
+        };
         try {
             const response = await fetch("http://localhost:3001/AddReceipt", {
                 //CHANGE ENDPOINT HERE
@@ -273,9 +278,28 @@ const AddReceipt = ({
             }
 
             const json = await response.json();
+            setBillSplit([...billSplit, ...json.billsplit]);
+            setOverspend([...overspend, ...json.overspend]);
+            console.log(json.billsplit);
+            console.log(json.overspend);
+            setDisplayStatus(1);
+            // find total cost to users here
         } catch (error) {
             console.error((error as Error).message);
         }
+
+        //TEST
+        // const json = {
+        //     billsplit: [{ user: "test", amount: 10 }],
+        //     overspend: [
+        //         { category: "test1", budget: 10, spent: 13 },
+        //         { category: "test2", budget: 12, spent: 11 },
+        //     ],
+        // };
+        // setBillSplit([...billSplit, ...json.billsplit]);
+        // setOverspend([...overspend, ...json.overspend]);
+        // setDisplayStatus(1);
+        //-------
     }
 
     useEffect(() => {
@@ -293,63 +317,144 @@ const AddReceipt = ({
             <h1 className="container">
                 <div className="general-outline">
                     Receipt
-                    {receiptID == -1 &&
-                    <Link to="/">
-                        <button className="input-button"> Return to Home</button>
-                    </Link>}
-                    {receiptID != -1 &&
-                    <Link to="/ViewReceipt">
-                        <button className="input-button" onClick={()=>{setReceiptID(-1)}}> Return to Receipt History</button>
-                    </Link>}
+                    {receiptID == -1 && (
+                        <Link to="/">
+                            <button className="input-button">
+                                {" "}
+                                Return to Home
+                            </button>
+                        </Link>
+                    )}
+                    {receiptID != -1 && (
+                        <Link to="/ViewReceipt">
+                            <button
+                                className="input-button"
+                                onClick={() => {
+                                    setReceiptID(-1);
+                                }}
+                            >
+                                {" "}
+                                Return to Receipt History
+                            </button>
+                        </Link>
+                    )}
                 </div>
             </h1>
-            <div className="container2" style={{ margin: 30 }}>
-                <text className="general"> Seller: </text>
-                <input
-                    value={seller}
-                    className="general-outline"
-                    onChange={(event) => {
-                        setSeller(event.target.value);
-                    }}
-                ></input>
-                {submitStatus == 1 && (
-                    <text
-                        className="general-outline"
-                        style={{ background: "pink" }}
-                    >
-                        {" "}
-                        No seller!{" "}
-                    </text>
-                )}
-            </div>
-            <div className="container3">
-                <Userbox
-                    userInputs={userInputs}
-                    setUserInputs={setUserInputs}
-                    selected={selected}
-                    setSelect={setSelect}
-                    userItems={userItems}
-                    setUserItems={setUserItems}
-                    itemsUser={itemsUser}
-                    setItemsUser={setItemsUser}
-                />
-                {!loaded && <text> Loading... </text>}
-                {loaded && (
-                    <Itembox
-                        inputs={inputs}
-                        setInputs={setInputs}
-                        data={data}
-                        setData={setData}
-                        onSubmit={submitReceipt}
-                        selected={selected}
-                        setSelect={setSelect}
-                        userItems={userItems}
-                        setUserItems={setUserItems}
-                        itemsUser={itemsUser}
-                        setItemsUser={setItemsUser}
-                    />
-                )}
-            </div>
+            {displayStatus == 0 && (
+                <div>
+                    <div className="container2" style={{ margin: 30 }}>
+                        <text className="general"> Seller: </text>
+                        <input
+                            value={seller}
+                            className="general-outline"
+                            onChange={(event) => {
+                                setSeller(event.target.value);
+                            }}
+                        ></input>
+                        {submitStatus == 1 && (
+                            <text
+                                className="general-outline"
+                                style={{ background: "pink" }}
+                            >
+                                {" "}
+                                No seller!{" "}
+                            </text>
+                        )}
+                    </div>
+                    <div className="container3">
+                        <Userbox
+                            userInputs={userInputs}
+                            setUserInputs={setUserInputs}
+                            selected={selected}
+                            setSelect={setSelect}
+                            userItems={userItems}
+                            setUserItems={setUserItems}
+                            itemsUser={itemsUser}
+                            setItemsUser={setItemsUser}
+                        />
+                        {!loaded && <text> Loading... </text>}
+                        {loaded && (
+                            <Itembox
+                                inputs={inputs}
+                                setInputs={setInputs}
+                                data={data}
+                                setData={setData}
+                                onSubmit={submitReceipt}
+                                selected={selected}
+                                setSelect={setSelect}
+                                userItems={userItems}
+                                setUserItems={setUserItems}
+                                itemsUser={itemsUser}
+                                setItemsUser={setItemsUser}
+                            />
+                        )}
+                    </div>
+                </div>
+            )}
+            {displayStatus == 1 && (
+                <div className="container">
+                    <text className="general"> Bill Split: </text>
+
+                    <div className="container2">
+                        <input className="general" value={"User"} readOnly />
+                        <input className="general" value={"Amount"} readOnly />
+                    </div>
+                    {billSplit.map((user, index) => (
+                        <div className="container2">
+                            <input className="general-outline" value={user.user} readOnly />
+                            <input className="general-outline" value={user.amount} readOnly />
+                        </div>
+                    ))}
+
+                    {overspend.length != 0 && (
+                        <div className="container" style={{margin: 20, background: "pink"}}>
+                            <text className="general">
+                                {" "}
+                                Overspent catagories:{" "}
+                            </text>
+                            <div className="container2">
+                                <input
+                                    className="general"
+                                    value={"Name"}
+                                    style={{background: "pink"}}
+                                    readOnly
+                                />
+                                <input
+                                    className="general"
+                                    value={"Budget"}
+                                    style={{background: "pink"}}
+                                    readOnly
+                                />
+                                <input
+                                    className="general"
+                                    value={"Spent"}
+                                    style={{background: "pink"}}
+                                    readOnly
+                                />
+                            </div>
+                            {overspend.map((cata, index) => (
+                                <div className="container2">
+                                    <input
+                                        className="general-outline"
+                                        value={cata.category}
+                                        readOnly
+                                    />
+                                    <input
+                                        className="general-outline"
+                                        value={cata.budget}
+                                        readOnly
+                                    />
+                                    <input
+                                        className="general-outline"
+                                        value={cata.spent}
+                                        readOnly
+                                    />
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 };

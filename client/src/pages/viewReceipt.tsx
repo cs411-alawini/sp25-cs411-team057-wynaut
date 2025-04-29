@@ -115,7 +115,7 @@ const ViewReceipt = ({
                                         onClick={() => {
                                             setReceiptID(receipt.ReceiptID);
                                         }}
-                                    >
+                                    >   
                                         View
                                     </button>
                                 </Link>
