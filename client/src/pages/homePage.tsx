@@ -187,7 +187,11 @@ const HomePage = ({
                         View Previous Receipts
                     </button>
                 </Link>
-
+                <Link to="/AddIncome">
+                    <button className="input-button">
+                        Add Annual Income
+                    </button>
+                </Link>
                 {underAvg && (
                     <text
                         className="general-outline"
