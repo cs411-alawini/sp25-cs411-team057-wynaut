@@ -150,6 +150,11 @@ export async function updateContributes(contribute: Contributes): Promise<void> 
     return;
 }
 
+export async function getIncome(userID: number): Promise<number> {
+    const sqlQuery = `Select Income From Accounts Where UserID = ${userID};`;
+    const [rows] = await pool.query(sqlQuery);
+    return (rows as [{Income:number}])[0].Income;
+}
 export async function getReceipt(receiptID: number): Promise<Receipts> {
     const sqlQuery = `Select * From Receipts Where ReceiptID = ${receiptID};`;
     const [rows] = await pool.query(sqlQuery);
@@ -301,6 +306,9 @@ async function main() {
     //     console.log(results);
     // })
     //addIncome(1000, 10000);
+    // getIncome(1000).then((results) => {
+    //     console.log(results);
+    // });
 }
 
 main();
