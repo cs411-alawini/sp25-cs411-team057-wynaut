@@ -30,7 +30,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
             let curr_data = [...data];
             curr_data.splice(0);
             for (let i = 0; i < json.length; i++) {
-                curr_data.push([json[i], json[i].category]);
+                curr_data.push([json[i], json[i].Category]);
             }
             setData(curr_data);
             setLoaded(true);
@@ -40,16 +40,12 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
 
         //TEST CODE
         // let test_data: Array<CategoryInput> = [
-        //     { category: "test1", budget: 10, spent: 13 },
-        //     { category: "test2", budget: 12, spent: 11 },
-        //     { category: "test3", budget: 14, spent: 16 },    
-        //     { category: "test4", budget: 15, spent: 14 },
-        //     { category: "test5", budget: 16, spent: 21 },
+        //     { Category: "test1",Budget: 10, Spent: 13 },
         // ];
         // let curr_data = [...data];
         // curr_data.splice(0);
         // for (let i = 0; i < test_data.length; i++) {
-        //     curr_data.push([test_data[i], test_data[i].category]);
+        //     curr_data.push([test_data[i], test_data[i].Category]);
         // }
         // setData(curr_data);
         // setLoaded(true);
@@ -63,6 +59,23 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                 headers: { "Content-type": "application/json" },
                 method: "PUT",
                 body: JSON.stringify({user: username, new: data}),
+            });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            let res = JSON.parse(await response.json());
+        } catch (error) {
+            console.error((error as Error).message);
+        }
+    }
+    async function deleteCata(cataName : string) {
+        try {
+            const response = await fetch("http://localhost:3001/deleteCata", {
+                //CHANGE ENDPOINT HERE
+                headers: { "Content-type": "application/json" },
+                method: "PUT",
+                body: JSON.stringify({user: username, Catagory: cataName}),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -105,12 +118,13 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                     let curr_data = [...data];
                                     curr_data.push([
                                         {
-                                            category: "CategoryName",
-                                            budget: 0,
-                                            spent: 0,
+                                            Category: "CategoryName",
+                                            Budget: 0,
+                                            Spent: 0,
                                         },
                                         "",
                                     ]);
+                                    console.log(curr_data)
                                     setData([...curr_data]);
                                 }}
                             >
@@ -139,34 +153,34 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                             <div className="input-container" key={index}>
                                 <input
                                     className="general-outline"
-                                    value={categoryIn[0].category}
+                                    value={categoryIn[0].Category}
                                     onChange={(event) => {
                                         let curr_data = [...data];
-                                        curr_data[index][0].category =
+                                        curr_data[index][0].Category =
                                             event.target.value;
                                         setData([...curr_data]);
                                     }}
                                 />
                                 <input
                                     className="general-outline"
-                                    value={categoryIn[0].budget}
+                                    value={categoryIn[0].Budget}
                                     onChange={(event) => {
                                         let curr_data = [...data];
                                         if (
                                             !isNaN(Number(event.target.value))
                                         ) {
-                                            curr_data[index][0].budget =
+                                            curr_data[index][0].Budget =
                                                 parseInt(event.target.value);
                                         }
                                         if (event.target.value === "") {
-                                            curr_data[index][0].budget = 0;
+                                            curr_data[index][0].Budget = 0;
                                         }
                                         setData([...curr_data]);
                                     }}
                                 />
                                 <input
                                     className="general-outline"
-                                    value={categoryIn[0].spent}
+                                    value={categoryIn[0].Spent}
                                     readOnly
                                 />
                                 <button
@@ -179,6 +193,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                             curr_data.splice(index, 1);
                                             setData([...curr_data]);
                                         }
+                                        deleteCata(categoryIn[0].Category)
                                     }}
                                 >
                                     Delete

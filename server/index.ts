@@ -5,16 +5,23 @@ import {
     addAccount,
     addBudget,
     addContributes,
+    addIncome,
     addItem,
     addReceipt,
+    billSplit,
     changeCategoryName,
+    deleteBudget,
+    deleteReceipt,
+    findOverspending,
     getAllBudgets,
     getAllReceipts,
     getBudget,
+    getIncome,
     getItemContributes,
     getReceipt,
     getReceiptItems,
     getUsername,
+    goodSpendingHabit,
     login,
     updateBudget,
     verifyAccount,
@@ -56,6 +63,7 @@ app.put("/login", (req, res) => {
 req = 
 {
     user: string,
+    receiptID: number,
     seller: string,
     items:  [
                 {
@@ -85,6 +93,12 @@ async function check_users(req: any): Promise<string> {
 
     return '';
 }
+
+app.post("/CheckUser", (req, res) => {
+    verifyAccount(req.body["username"]).then((value) => {
+        res.send(value);
+    })
+})
 
 async function addAll(req: Request) {
     let currentdate = new Date();
@@ -118,8 +132,7 @@ async function addAll(req: Request) {
         for (let j = 0; j < x["amount"]; j++) {
             let new_item_id = await addItem(new_item);
 
-            // console.log(new_item_id);
-            let new_percent = 100 / x["contributes"].length;
+            let new_percent = 1 / x["contributes"].length;
 
             for (let k = 0; k < x["contributes"].length; k++) {
 
@@ -129,37 +142,72 @@ async function addAll(req: Request) {
                     Percentage: new_percent
                 }
 
-                addContributes(new_contribute);
+                await addContributes(new_contribute);
             }
         }
     }
 
+    return new_receipt_id;
 }
 
 
-app.put("/addReceipt", (req: Request, res: Response) => {
-    // console.log(req.body["items"][0]);
-    check_users(req).then((value) => {
-        if (value == '') {
-            addAll(req);
-            res.send("added receipt");
-        } else {
-            res.send("invalid users");
+/*
+{
+    billsplit: [
+        {
+            Username: string,
+            Spent: number
         }
+    ],
 
-    }).catch(() => res.send("failed to add receipt"));
+    overspend: [
+        {
+            Category: string,
+            Spent: number,
+            Budget: number
+        }
+    ]
+}
+*/
+
+async function getResults(req: any)
+ {
+    let receipt_id = await addAll(req);
+    let uid = await verifyAccount(req.body["user"]);
+    let split = await billSplit(receipt_id);
+    let over = await findOverspending(uid);
+
+    let new_split = [];
+    let new_over = [];
+
+    for (let i = 0; i < split.length; i++) {
+        let s = split[i];
+        new_split.push({Username: await getUsername(s.UserId), Spent: s.Paid});
+    }
+
+    for (let i = 0; i < over.length; i++) {
+        let s = over[i];
+        new_over.push({Category: s.Category, Spent: s.TotalSpentInCategory, Budget: s.Budget});
+    }
+
+    return JSON.stringify({billsplit: new_split, overspend: new_over});
+ }
+app.put("/addReceipt", (req: Request, res: Response) => {
+    getResults(req).then((val) => res.send(val));
 });
+
+app.post("/deleteReceipt", (req, res) => {
+    deleteReceipt(req.body["receiptID"]).then(() => {
+        res.send("accepted");
+    })
+})
 
 async function obtainReceipt(receiptID: number) {
     if (receiptID == -1) {
-        // console.log("man wtf");
         return;
     }
     let new_receipt: Receipts = await getReceipt(receiptID);
     let items: Items[] = await getReceiptItems(receiptID);
-
-    console.log(new_receipt);
-    // console.log(items);
 
     let item_map = new Map();
 
@@ -182,8 +230,6 @@ async function obtainReceipt(receiptID: number) {
         }
     }
 
-    // console.log(item_map);
-
     let all_inputs: any = [];
     let item_arr = Array.from(item_map.entries());
 
@@ -198,12 +244,8 @@ async function obtainReceipt(receiptID: number) {
 
         item_input["contributes"] = names;
 
-        // console.log(item_input);
         all_inputs.push(item_input);
-        // console.log(all_inputs.length);
     }
-
-    // console.log(all_inputs.length);
 
     let data = {
         user: new_receipt.UserID,
@@ -215,9 +257,7 @@ async function obtainReceipt(receiptID: number) {
 }
 
 app.post("/GetReceipt", (req: Request, res: Response) => {
-    // console.log("hello");
     obtainReceipt(req.body["receipt"]).then((data) => {
-        // console.log(data);
         res.send(data);
     })
 });
@@ -225,11 +265,18 @@ app.post("/GetReceipt", (req: Request, res: Response) => {
 app.post("/ViewReceipt", (req: Request, res: Response) => {
     verifyAccount(req.body["user"]).then((uid) => {
         getAllReceipts(uid).then((receipts: Receipts[]) => {
-            res.send(receipts);
+            let new_receipts = []
+
+            for (let i = 0; i < receipts.length; i++) {
+                let r : Receipts = receipts[i];
+                let date = r.PurchaseDate.toString();
+                let idx = date.search(":");
+                new_receipts.push({ReceiptID: r.ReceiptID, PurchaseDate: r.PurchaseDate.toString().substring(0,idx - 3), Seller: r.Seller});
+            }
+            res.send(JSON.stringify(new_receipts));
         });
     });
 });
-
 
 //CATEGORIES
 /*
@@ -244,7 +291,7 @@ app.post("/ViewCategory", (req: Request, res: Response) => {
 
             for (let i = 0; i < budgets.length; i++) {
                 let b = budgets[i];
-                data.push({category: b["Category"], budget: b["Budget"], spent: b["Spent"]});
+                data.push({Category: b["Category"], Budget: b["Budget"], Spent: b["Spent"]});
             }
 
             res.send(data);
@@ -252,6 +299,32 @@ app.post("/ViewCategory", (req: Request, res: Response) => {
     })
 });
 
+app.post("/goodSpendingHabit", (req, res) => {
+    console.log(req.body["username"]);
+    verifyAccount(req.body["username"]).then((uid) => {
+        goodSpendingHabit(uid).then((val) => {
+            res.send(val);
+        })
+    })
+});
+
+app.put("/addIncome", (req,res) => {
+    verifyAccount(req.body["username"]).then((uid) => {
+        addIncome(uid, req.body["income"]).then(() => res.send("accepted"));
+    });
+});
+
+app.post("/getIncome", (req, res) => {
+    verifyAccount(req.body["username"]).then((uid) => {
+        getIncome(uid).then((val) => {
+            if (val == null) {
+                res.send(0);
+            } else {
+                res.send(val);
+            }
+        });
+    });
+});
 /*
 {
     user: username,
@@ -275,15 +348,18 @@ app.put("/updateBudget", (req: Request, res: Response) => {
             let old = b[1];
 
             let new_budget: Budget = {
-                Category: c["category"],
+                Category: c["Category"],
                 UserID: uid,
-                Budget: c["budget"],
-                Spent: c["spent"]
+                Budget: c["Budget"],
+                Spent: c["Spent"]
             }
+ 
+            console.log(c);
+            console.log(old);
             if (old == "") {
                 addBudget(new_budget);
             } else {
-                changeCategoryName(c["category"], uid, old).then(() => {
+                changeCategoryName(old, uid, c["Category"]).then(() => {
                     c["UserID"] = uid;
                     updateBudget(new_budget);
                 });
@@ -294,33 +370,39 @@ app.put("/updateBudget", (req: Request, res: Response) => {
     });
 });
 
+app.post("/removeCategory", (req, res) => {
+    verifyAccount(req.body["user"]).then((uid) => {
+        deleteBudget(req.body["Category"], uid).then(() => res.send("deleted category"));
+    })
+});
+
 
 app.listen(PORT, () => {
     console.log(`Server running on localhost:${PORT}`);
 });
 
-// let req = {
-//     user: 1001,
-//     seller: "",
-//     items: [{
-//                 name: "jake",
-//                 price: 10,
-//                 amount: 2,
-//                 category: "people",
-//                 contributes: ["CJ", "Kevin", "Wenhao", "David"]
-//             }
-//             ,
-//             {
-//                 name: "jake2",
-//                 price: 5,
-//                 amount: 1,
-//                 category: "people",
-//                 contributes: ["CJ", "David"]
-//             },]
-// }
+let req = {
+    user: "david",
+    seller: "",
+    items: [{
+                name: "jake",
+                price: 10,
+                amount: 1,
+                category: "people",
+                contributes: ["CJ", "Kevin", "Wenhao", "David"]
+            }
+            ,
+            {
+                name: "jake2",
+                price: 5,
+                amount: 1,
+                category: "people",
+                contributes: ["CJ", "David"]
+            },]
+}
 
-// fetch("http://localhost:3003/GetReceipt", {
+// fetch("http://localhost:3001/AddReceipt", {
 //     headers: { "Content-type": "application/json" },
-//     method: "POST",
-//     body: JSON.stringify({receipt: 5}),
+//     method: "PUT",
+//     body: JSON.stringify(req),
 // }).then(() => console.log("wtf"));
