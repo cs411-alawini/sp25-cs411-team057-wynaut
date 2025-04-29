@@ -185,10 +185,11 @@ export async function getItemContributes(itemID:number): Promise<Contributes[]>{
     return rows as Contributes[];
 }
 
-export async function billSplit(receiptID: number): Promise<{UserId: number, Paid: number}>{
+export async function billSplit(receiptID: number): Promise<[{UserId: number, Paid: number}]>{
     const sqlQuery = `Call billSplit(${receiptID});`;
     const [rows] = await pool.query(sqlQuery);
-    return (rows as [{UserId: number, Paid: number}])[0];
+    console.log(rows);
+    return (rows as [[{UserId: number, Paid: number}], any])[0];
 }
 
 export async function updateUserSpending(userID: number): Promise<void>{
@@ -196,10 +197,18 @@ export async function updateUserSpending(userID: number): Promise<void>{
     pool.query(sqlQuery);
 }
 
-export async function findOverspending(userID: number): Promise<{category: string, spent: number, budget: number}>{
+export async function findOverspending(userID: number): Promise<{Category: string, TotalSpentInCategory: number, Budget: number}>{
     const sqlQuery = `Call FindOverspending(${userID});`;
     const [rows] = await pool.query(sqlQuery);
-    return (rows as [{category: string, spent: number, budget: number}])[0];
+    return (rows as [[{Category: string, TotalSpentInCategory: number, Budget: number}], any])[0][0];
+}
+
+export async function goodSpendingHabit(userID:number): Promise<boolean>{
+    const sqlQuery = `Call goodSpendingHabit(${userID});`;
+    const[rows] = await pool.query(sqlQuery);
+    const user = ((rows as [{ UserID: number }])[0]) as { UserID: number };
+    if (Object.keys(user).length == 0) return false;
+    return true;
 }
 // Testing
 async function main() {
@@ -231,9 +240,6 @@ async function main() {
     // deleteReceipt(1000);
     // deleteItem(9901);
     // login({Username: "TestUser", Password: "12"}).then((results) => {
-    //     console.log(results);
-    // });
-    // billSplit(1021).then((results) =>{
     //     console.log(results);
     // });
     // updateUserSpending(1000);
@@ -270,10 +276,23 @@ async function main() {
     // getContributes(1000, 9408).then((results) =>{
     //     console.log(results);
     // });
-    // await findOverspending(1000).then((results) => {
+    // await findOverspending(7).then((results) => {
+    //     console.log(results);
+    //     console.log(results.Category);
+    //     console.log(results.TotalSpentInCategory);
+    //     console.log(results.Budget);
+    // });
+    // billSplit(1021).then((results) =>{
+    //     console.log(results);
+    //     console.log(results[0].Paid);
+    //     console.log(results[0].UserId);
+    // });
+    // await goodSpendingHabit(7).then((results) =>{
     //     console.log(results);
     // });
-
+    // await verifyAccount("wynaut").then((results) =>{
+    //     console.log(results);
+    // })
 }
 
 main();
