@@ -3,7 +3,7 @@ import pool from "./connections";
 import { RowDataPacket } from "mysql2";
 
 export async function getAllReceipts(userID: number): Promise<Receipts[]> {
-    const sqlQuery = `Select * From Receipts Where UserID = ${userID} LIMIT 10;`;
+    const sqlQuery = `Select * From Receipts Where UserID = ${userID} Order By ReceiptID DESC LIMIT 10;`;
     const [rows] = await pool.query(sqlQuery);
     return rows as Receipts[];
 }
@@ -46,7 +46,7 @@ export async function addAccount(
 ): Promise<number> {
     try {
         const sqlQuery = `Insert Into Accounts(Username, Password, Income, MinIncome, MaxIncome) 
-                        VALUES ('${Username}', '${Password}', null, null, null)`;
+                        VALUES ('${Username}', '${Password}', ${0}, null, null)`;
         await pool.query(sqlQuery);
         return 1;
     } catch (err) {

@@ -10,6 +10,8 @@ import {
     addReceipt,
     billSplit,
     changeCategoryName,
+    deleteBudget,
+    deleteReceipt,
     findOverspending,
     getAllBudgets,
     getAllReceipts,
@@ -61,6 +63,7 @@ app.put("/login", (req, res) => {
 req = 
 {
     user: string,
+    receiptID: number,
     seller: string,
     items:  [
                 {
@@ -129,7 +132,6 @@ async function addAll(req: Request) {
         for (let j = 0; j < x["amount"]; j++) {
             let new_item_id = await addItem(new_item);
 
-            // console.log(new_item_id);
             let new_percent = 1 / x["contributes"].length;
 
             for (let k = 0; k < x["contributes"].length; k++) {
@@ -140,7 +142,7 @@ async function addAll(req: Request) {
                     Percentage: new_percent
                 }
 
-                addContributes(new_contribute);
+                await addContributes(new_contribute);
             }
         }
     }
@@ -188,25 +190,24 @@ async function getResults(req: any)
         new_over.push({Category: s.Category, Spent: s.TotalSpentInCategory, Budget: s.Budget});
     }
 
-    console.log(new_split);
-    console.log(new_over);
-
     return JSON.stringify({billsplit: new_split, overspend: new_over});
  }
 app.put("/addReceipt", (req: Request, res: Response) => {
     getResults(req).then((val) => res.send(val));
 });
 
+app.post("/deleteReceipt", (req, res) => {
+    deleteReceipt(req.body["receiptID"]).then(() => {
+        res.send("accepted");
+    })
+})
+
 async function obtainReceipt(receiptID: number) {
     if (receiptID == -1) {
-        // console.log("man wtf");
         return;
     }
     let new_receipt: Receipts = await getReceipt(receiptID);
     let items: Items[] = await getReceiptItems(receiptID);
-
-    console.log(new_receipt);
-    // console.log(items);
 
     let item_map = new Map();
 
@@ -229,8 +230,6 @@ async function obtainReceipt(receiptID: number) {
         }
     }
 
-    // console.log(item_map);
-
     let all_inputs: any = [];
     let item_arr = Array.from(item_map.entries());
 
@@ -245,12 +244,8 @@ async function obtainReceipt(receiptID: number) {
 
         item_input["contributes"] = names;
 
-        // console.log(item_input);
         all_inputs.push(item_input);
-        // console.log(all_inputs.length);
     }
-
-    // console.log(all_inputs.length);
 
     let data = {
         user: new_receipt.UserID,
@@ -262,9 +257,7 @@ async function obtainReceipt(receiptID: number) {
 }
 
 app.post("/GetReceipt", (req: Request, res: Response) => {
-    // console.log("hello");
     obtainReceipt(req.body["receipt"]).then((data) => {
-        // console.log(data);
         res.send(data);
     })
 });
@@ -307,6 +300,7 @@ app.post("/ViewCategory", (req: Request, res: Response) => {
 });
 
 app.post("/goodSpendingHabit", (req, res) => {
+    console.log(req.body["username"]);
     verifyAccount(req.body["username"]).then((uid) => {
         goodSpendingHabit(uid).then((val) => {
             res.send(val);
@@ -354,15 +348,15 @@ app.put("/updateBudget", (req: Request, res: Response) => {
             let old = b[1];
 
             let new_budget: Budget = {
-                Category: c["category"],
+                Category: c["Category"],
                 UserID: uid,
-                Budget: c["budget"],
-                Spent: c["spent"]
+                Budget: c["Budget"],
+                Spent: c["Spent"]
             }
             if (old == "") {
                 addBudget(new_budget);
             } else {
-                changeCategoryName(c["category"], uid, old).then(() => {
+                changeCategoryName(c["Category"], uid, old).then(() => {
                     c["UserID"] = uid;
                     updateBudget(new_budget);
                 });
@@ -371,6 +365,12 @@ app.put("/updateBudget", (req: Request, res: Response) => {
 
         res.send("Updated Budget");
     });
+});
+
+app.post("/removeCategory", (req, res) => {
+    verifyAccount(req.body["username"]).then((uid) => {
+        deleteBudget(req.body["Category"], uid).then(() => res.send("deleted category"));
+    })
 });
 
 

@@ -66,6 +66,7 @@ const HomePage = ({
                 setLogin(2);
 
                 setUsername(loginInfo.username);
+                checkGoodSpending();
             } else {
                 setLogin(-1);
             }
