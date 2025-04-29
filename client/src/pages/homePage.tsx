@@ -2,6 +2,7 @@ import { log } from "console";
 import React, { useState, JSX } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
 import { UserReceiptState, CategoryInput } from "../components/interfaces";
+import { json } from "stream/consumers";
 const HomePage = ({
     username,
     setUsername,
@@ -11,8 +12,7 @@ const HomePage = ({
     const [loginInfo, setInfo] = useState({ username: "", password: "" });
     const [loginStatus, setLogin] = useState(2); //-1 = failed to login 0 = not login yet 1 = in process 2 = logged in
     const [createStatus, setCreate] = useState(0); //-1 = failed to create 0 = not created yet 1 = in process 2 = created
-    const [data, setData] = useState<Array<CategoryInput>>([]);
-
+    const [underAvg, setAvg] = useState(false);
     const buttonTextLogin = () => {
         //Shows when trying to login
         if (loginStatus <= 0) {
@@ -97,6 +97,24 @@ const HomePage = ({
         }
     }
 
+    async function checkGoodSpending() {
+        try {
+            const response = await fetch("http://localhost:3001/goodspending", {
+                //CHANGE ENDPOINT HERE
+                headers: { "Content-type": "application/json" },
+                method: "POST",
+                body: JSON.stringify({ username: loginInfo.username }),
+            });
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            setAvg(await response.json());
+        } catch (error) {
+            console.error((error as Error).message);
+        }
+    }
+
     //RETURN ---------------------------------------------------------------------------------------------------------------------------
     if (username == "" && loginStatus != 2) {
         //No userID set and hasn't logged in yet
@@ -113,7 +131,6 @@ const HomePage = ({
                                 ...currloginInfo,
                                 username: event.target.value,
                             }));
-                            ;
                         }}
                         className="general-outline"
                     />
@@ -130,7 +147,6 @@ const HomePage = ({
                                 ...currloginInfo,
                                 password: event.target.value,
                             }));
-                            ;
                         }}
                         className="general-outline"
                     />
@@ -171,6 +187,16 @@ const HomePage = ({
                         View Previous Receipts
                     </button>
                 </Link>
+
+                {underAvg && (
+                    <text
+                        className="general-outline"
+                        style={{ margin: 30, color: "green" }}
+                    >
+                        {" "}
+                        Your spending is under the US average expense!{" "}
+                    </text>
+                )}
             </div>
         );
     }
