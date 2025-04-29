@@ -20,7 +20,7 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
             }
             else{
                 let ind = self.data.findIndex((value : CategoryInput) => {
-                    return value.category == element.category})
+                    return value.Category == element.category})
                 new_cataArr.push(ind)
             }
         })
@@ -288,14 +288,14 @@ const ItemBox = (self: ItemBoxInputs): JSX.Element => {
                                             curr_inputs[index].category =
                                                 self.data[
                                                     cataIndex
-                                                ].category;
+                                                ].Category;
                                         }
                                         setCataArr(curr_cataArr);
                                         self.setInputs(curr_inputs);
                                         console.log(cataArr);
                                     }}
                                 >
-                                    {category.category}
+                                    {category.Category}
                                 </button>
                             ))}
                     </div>

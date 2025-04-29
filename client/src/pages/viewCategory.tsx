@@ -30,7 +30,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
             let curr_data = [...data];
             curr_data.splice(0);
             for (let i = 0; i < json.length; i++) {
-                curr_data.push([json[i], json[i].category]);
+                curr_data.push([json[i], json[i].Category]);
             }
             setData(curr_data);
             setLoaded(true);

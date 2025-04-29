@@ -3,7 +3,7 @@ import pool from "./connections";
 import { RowDataPacket } from "mysql2";
 
 export async function getAllReceipts(userID: number): Promise<Receipts[]> {
-    const sqlQuery = `Select * From Receipts Where UserID = ${userID};`;
+    const sqlQuery = `Select * From Receipts Where UserID = ${userID} LIMIT 10;`;
     const [rows] = await pool.query(sqlQuery);
     return rows as Receipts[];
 }
@@ -196,6 +196,11 @@ export async function updateUserSpending(userID: number): Promise<void>{
     pool.query(sqlQuery);
 }
 
+export async function findOverspending(userID: number): Promise<{category: string, spent: number, budget: number}>{
+    const sqlQuery = `Call FindOverspending(${userID});`;
+    const [rows] = await pool.query(sqlQuery);
+    return (rows as [{category: string, spent: number, budget: number}])[0];
+}
 // Testing
 async function main() {
     // getReceipt(1000).then((results) => {
@@ -265,10 +270,10 @@ async function main() {
     // getContributes(1000, 9408).then((results) =>{
     //     console.log(results);
     // });
-
-    // await getReceiptItems(5).then((results) => {
+    // await findOverspending(1000).then((results) => {
     //     console.log(results);
     // });
+
 }
 
 main();

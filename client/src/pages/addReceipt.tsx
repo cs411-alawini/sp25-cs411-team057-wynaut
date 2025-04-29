@@ -399,8 +399,8 @@ const AddReceipt = ({
                     </div>
                     {billSplit.map((user, index) => (
                         <div className="container2">
-                            <input className="general-outline" value={user.user} readOnly />
-                            <input className="general-outline" value={user.amount} readOnly />
+                            <input className="general-outline" value={user.Username} readOnly />
+                            <input className="general-outline" value={user.Spent} readOnly />
                         </div>
                     ))}
 
@@ -434,17 +434,17 @@ const AddReceipt = ({
                                 <div className="container2">
                                     <input
                                         className="general-outline"
-                                        value={cata.category}
+                                        value={cata.Category}
                                         readOnly
                                     />
                                     <input
                                         className="general-outline"
-                                        value={cata.budget}
+                                        value={cata.Budget}
                                         readOnly
                                     />
                                     <input
                                         className="general-outline"
-                                        value={cata.spent}
+                                        value={cata.Spent}
                                         readOnly
                                     />
                                 </div>
