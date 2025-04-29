@@ -106,7 +106,7 @@ const HomePage = ({
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "POST",
-                body: JSON.stringify({ username: loginInfo.username }),
+                body: JSON.stringify({ username: username }),
             });
             if (!response.ok) {
                 throw new Error(`Response status: ${response.status}`);
@@ -118,6 +118,9 @@ const HomePage = ({
         }
     }
 
+    useEffect(() => {
+        checkGoodSpending();
+    }, []); // Empty dependency array ensures the effect runs only once on mount
     //RETURN ---------------------------------------------------------------------------------------------------------------------------
     if (username == "" && loginStatus != 2) {
         //No userID set and hasn't logged in yet
