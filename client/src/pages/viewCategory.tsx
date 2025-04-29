@@ -40,16 +40,12 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
 
         //TEST CODE
         // let test_data: Array<CategoryInput> = [
-        //     { category: "test1", budget: 10, spent: 13 },
-        //     { category: "test2", budget: 12, spent: 11 },
-        //     { category: "test3", budget: 14, spent: 16 },    
-        //     { category: "test4", budget: 15, spent: 14 },
-        //     { category: "test5", budget: 16, spent: 21 },
+        //     { Category: "test1",Budget: 10, Spent: 13 },
         // ];
         // let curr_data = [...data];
         // curr_data.splice(0);
         // for (let i = 0; i < test_data.length; i++) {
-        //     curr_data.push([test_data[i], test_data[i].category]);
+        //     curr_data.push([test_data[i], test_data[i].Category]);
         // }
         // setData(curr_data);
         // setLoaded(true);
@@ -105,9 +101,9 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                     let curr_data = [...data];
                                     curr_data.push([
                                         {
-                                            category: "CategoryName",
-                                            budget: 0,
-                                            spent: 0,
+                                            Category: "CategoryName",
+                                            Budget: 0,
+                                            Spent: 0,
                                         },
                                         "",
                                     ]);
@@ -142,7 +138,7 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                     value={categoryIn[0].Category}
                                     onChange={(event) => {
                                         let curr_data = [...data];
-                                        curr_data[index][0].category =
+                                        curr_data[index][0].Category =
                                             event.target.value;
                                         setData([...curr_data]);
                                     }}
@@ -155,11 +151,11 @@ const ViewCategory = ({ username }: UsernameInput): JSX.Element => {
                                         if (
                                             !isNaN(Number(event.target.value))
                                         ) {
-                                            curr_data[index][0].budget =
+                                            curr_data[index][0].Budget =
                                                 parseInt(event.target.value);
                                         }
                                         if (event.target.value === "") {
-                                            curr_data[index][0].budget = 0;
+                                            curr_data[index][0].Budget = 0;
                                         }
                                         setData([...curr_data]);
                                     }}
