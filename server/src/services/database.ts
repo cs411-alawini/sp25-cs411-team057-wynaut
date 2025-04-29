@@ -299,7 +299,10 @@ async function main() {
     //     console.log(results[0].Paid);
     //     console.log(results[0].UserId);
     // });
-    // await goodSpendingHabit(8).then((results) =>{
+    // await goodSpendingHabit(7).then((results) =>{
+    //     console.log(results);
+    // });
+    // await goodSpendingHabit(1000).then((results) =>{
     //     console.log(results);
     // });
     // await verifyAccount("wynaut").then((results) =>{
