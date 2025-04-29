@@ -99,7 +99,7 @@ const HomePage = ({
 
     async function checkGoodSpending() {
         try {
-            const response = await fetch("http://localhost:3001/goodspending", {
+            const response = await fetch("http://localhost:3001/goodSpendingHabit", {
                 //CHANGE ENDPOINT HERE
                 headers: { "Content-type": "application/json" },
                 method: "POST",

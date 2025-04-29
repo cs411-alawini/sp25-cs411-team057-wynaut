@@ -306,7 +306,7 @@ app.post("/ViewCategory", (req: Request, res: Response) => {
 });
 
 app.post("/goodSpendingHabit", (req, res) => {
-    verifyAccount(req.body["Username"]).then((uid) => {
+    verifyAccount(req.body["username"]).then((uid) => {
         goodSpendingHabit(uid).then((val) => {
             res.send(val);
         })
