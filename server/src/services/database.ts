@@ -185,11 +185,11 @@ export async function getItemContributes(itemID:number): Promise<Contributes[]>{
     return rows as Contributes[];
 }
 
-export async function billSplit(receiptID: number): Promise<[{UserID: number, Spent: number}]>{
+export async function billSplit(receiptID: number): Promise<[{UserId: number, Paid: number}]>{
     const sqlQuery = `Call billSplit(${receiptID});`;
     const [rows] = await pool.query(sqlQuery);
     // console.log(rows);
-    return (rows as [[{UserID: number, Spent: number}], any])[0];
+    return (rows as [[{UserId: number, Paid: number}], any])[0];
 }
 
 export async function updateUserSpending(userID: number): Promise<void>{
@@ -197,10 +197,10 @@ export async function updateUserSpending(userID: number): Promise<void>{
     pool.query(sqlQuery);
 }
 
-export async function findOverspending(userID: number): Promise<[{Category: string, Spent: number, Budget: number}]>{
+export async function findOverspending(userID: number): Promise<[{Category: string, TotalSpentInCategory: number, Budget: number}]>{
     const sqlQuery = `Call FindOverspending(${userID});`;
     const [rows] = await pool.query(sqlQuery);
-    return (rows as [[{Category: string, Spent: number, Budget: number}], any])[0];
+    return (rows as [[{Category: string, TotalSpentInCategory: number, Budget: number}], any])[0];
 }
 
 export async function goodSpendingHabit(userID:number): Promise<boolean>{
@@ -278,9 +278,9 @@ async function main() {
     // });
     // await findOverspending(7).then((results) => {
     //     console.log(results);
-    //     console.log(results.Category);
-    //     console.log(results.TotalSpentInCategory);
-    //     console.log(results.Budget);
+    //     console.log(results[0].Budget);
+    //     console.log(results[0].Category);
+    //     console.log(results[0].TotalSpentInCategory);
     // });
     // billSplit(1021).then((results) =>{
     //     console.log(results);
